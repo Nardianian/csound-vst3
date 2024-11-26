@@ -6,8 +6,8 @@ style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.p
 <a rel="ccncsa4" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
 <p>All code herein is licensed under the  
-<a rel="agplv3" href="https://www.gnu.org/licenses/agpl.html/">
-Gnu Affero General Public License, version 3</a>.
+<a rel="agplv3" href="https://www.gnu.org/licenses/licenses.html#AGPL">
+GNU Affero General Public License, version 3</a>.
 
 # CsoundVST3
 [Michael Gogins](https://michaelgogins.tumblr.com)
