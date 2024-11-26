@@ -5,8 +5,11 @@ style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.p
 <p>All music and examples herein are licensed under the  
 <a rel="ccncsa4" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
 Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
-<p>All code herein is licensed under the  
-<a rel="agplv3" href="https://www.gnu.org/licenses/licenses.html#AGPL">
+<p>
+<img alt="GNU Affero General License v3" 
+style="border-width:0" src="https://www.gnu.org/graphics/agplv3-155x51.png" /> 
+</p><p>All code herein is licensed under the  
+<a rel="agplv3" href="https://www.gnu.org/licenses/agpl-3.0.html">
 GNU Affero General Public License, version 3</a>.
 
 # CsoundVST3
@@ -14,16 +17,16 @@ GNU Affero General Public License, version 3</a>.
 
 ## Introduction
 
-CsoundVS3 enables the <a href="[xxx](https://csound.com/)">Csound andio 
-programming language</a> to be used within digital audio workstations as a 
-VST3 plugin instrument. 
+CsoundVS3 enables the [Csound audio programming language](https://csound.com/") 
+to be used within digital audio workstations as a VST3 plugin instrument. The 
+plugin can also be used as a signal processing effect.
 
 CsoundVST3 has audio inputs, audio outputs, MIDI inputs, and MIDI outputs. 
 The plugin hosts one .csd file, which can be edited from the plugin's user 
 interface. The interface also displays Csound's runtime messages. Csound's 
 score time is synchronized with the DAW's playback time, which can loop.
 
-The plugin can also be used as a signal processing effect.
+
 
 CsoundVST3 has _all_ the power of command-line Csound. CsoundVST3 can read and 
 write on the user's filesystem, load plugin opcodes, and execute system 
