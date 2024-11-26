@@ -32,7 +32,7 @@ CsoundVST3 has _all_ the power of command-line Csound. CsoundVST3 can read and
 write on the user's filesystem, load plugin opcodes, and execute system 
 commands.
 
-CsoundVST's GUI does _not_ provide user-defined widgets for controlling the 
+CsoundVST3's GUI does _not_ provide user-defined widgets for controlling the 
 Csound orchestra. However, such controls can be implemented in the DAW using 
 MIDI control change messages, or through Csound's network interfaces. All MIDI 
 control change messages are automatically mapped to Csound k-rate control 
@@ -61,10 +61,13 @@ plugins directory. For example, in macOS, that would normally be the user's
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 
- 3. Open the CsoundVST3 GUI and either open your .csd file using the Open... 
+ 3. Open the CsoundVST3 GUI and either open your .csd file using the __**Open...**__ 
     dialog, or paste the .csd code into the edit window.
 
- 4. Click on the Play button to make sure that the .csd compiles and runs. 
+ 4. In some DAWs, such as Reaper, you must ensure that the plugin wrapper sends 
+    __all__ keystrokes to CsoundVST3, otherwise editing .csd files is a black art.
+
+ 4. Click on the __**Play**__ button to make sure that the .csd compiles and runs. 
     You can use a score in your DAW, or a MIDI controlleer, or a virtual 
     keyboard to test the .csd.
 
