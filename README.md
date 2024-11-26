@@ -61,19 +61,20 @@ plugins directory. For example, in macOS, that would normally be the user's
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 
- 3. Open the CsoundVST3 GUI and either open your .csd file using the Open... 
-    dialog, or paste the .csd code into the edit window.
+ 3. Open the CsoundVST3 GUI and either open your .csd file using the
+    _**Open...**_ dialog, or paste the .csd code into the edit window.
 
- 4. Click on the Play button to make sure that the .csd compiles and runs. 
-    You can use a score in your DAW, or a MIDI controlleer, or a virtual 
-    keyboard to test the .csd.
+ 5. Click on the **_Play_** button to make sure that the .csd compiles and
+    runs. You can use a score in your DAW, or a MIDI controlleer, or a
+    virtual keyboard to test the .csd.
 
- 5. Save your DAW project, and re-open it to make sure that your plugin 
+ 7. Save your DAW project, and re-open it to make sure that your plugin 
     and its .csd have been loaded.
 
 This plugin does not implement presets. The entire state of the plugin is the 
 .csd file, which is saved and loaded as part of the DAW project. However, you 
-can have as many CsoundVST3 plugins on as many tracks as you like.
+can have as many CsoundVST3 plugins on as many tracks as you like, each with 
+its own independent .csd file.
 
 
 
