@@ -26,8 +26,6 @@ The plugin hosts one .csd file, which can be edited from the plugin's user
 interface. The interface also displays Csound's runtime messages. Csound's 
 score time is synchronized with the DAW's playback time, which can loop.
 
-
-
 CsoundVST3 has _all_ the power of command-line Csound. CsoundVST3 can read and 
 write on the user's filesystem, load plugin opcodes, and execute system 
 commands.
@@ -38,11 +36,12 @@ MIDI control change messages, or through Csound's network interfaces. All MIDI
 control change messages are automatically mapped to Csound k-rate control 
 channels, using a naming convention.
 
-Please log any bug reports or enhancement requests as a GitHub issue.
+Please log any bug reports or feature requests as a GitHub issue.
 
 ## Installation
 
-Download the installation archive from <a href="">GitHub<a/> and unzip it.
+Download the installation archive from 
+<a href="https://github.com/gogins/csound-vst3">GitHub<a/> and unzip it.
 
 Copy the CsoundVST3.vst3 directory and its contents to your computer's VST3 
 plugins directory. For example, in macOS, that would normally be the user's 
@@ -61,22 +60,28 @@ plugins directory. For example, in macOS, that would normally be the user's
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 
- 3. Open the CsoundVST3 GUI and either open your .csd file using the __**Open...**__ 
-    dialog, or paste the .csd code into the edit window.
+ 3. Open the CsoundVST3 GUI and either open your .csd file using the
+    _**Open...**_ dialog, or paste the .csd code into the edit window.
 
- 4. In some DAWs, such as Reaper, you must ensure that the plugin wrapper sends 
-    __all__ keystrokes to CsoundVST3, otherwise editing .csd files is a black art.
+ 4. In some DAWs, configure the plugin not to forward any key events to the 
+    host. In Reaper, open the FX editor, select the __**FX**__ menu, and 
+    enable the __**Send all keyboard input to plug-in...**-- item.
+ 
+ 5. Click on the **_Play_** button to make sure that the .csd compiles and
+    runs. You can use a score in your DAW, or a MIDI controlleer, or a
+    virtual keyboard to test the .csd.
 
- 4. Click on the __**Play**__ button to make sure that the .csd compiles and runs. 
-    You can use a score in your DAW, or a MIDI controlleer, or a virtual 
-    keyboard to test the .csd.
-
- 5. Save your DAW project, and re-open it to make sure that your plugin 
+ 7. Save your DAW project, and re-open it to make sure that your plugin 
     and its .csd have been loaded.
 
 This plugin does not implement presets. The entire state of the plugin is the 
 .csd file, which is saved and loaded as part of the DAW project. However, you 
-can have as many CsoundVST3 plugins on as many tracks as you like.
+can have as many CsoundVST3 plugins on as many tracks as you like, each with 
+its own independent .csd file.
+
+## Release notes for version 0.1beta
+
+This is the initial release.
 
 
 
