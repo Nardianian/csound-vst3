@@ -65,11 +65,11 @@ plugins directory. For example, in macOS, that would normally be the user's
 
  4. In some DAWs, configure the plugin not to forward any key events to the 
     host. In Reaper, open the FX editor, select the __**FX**__ menu, and 
-    enable the __**Send all keyboard input to plug-in...**-- item.
+    enable the __**Send all keyboard input to plug-in...**__ item.
  
  5. Click on the **_Play_** button to make sure that the .csd compiles and
     runs. You can use a score in your DAW, or a MIDI controlleer, or a
-    virtual keyboard to test the .csd.
+    virtual keyboard to play notes using the .csd.
 
  7. Save your DAW project, and re-open it to make sure that your plugin 
     and its .csd have been loaded.
