@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "csound_threaded.hpp"
 
 
 //==============================================================================
@@ -15,7 +16,8 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     : AudioProcessorEditor (&p), audioProcessor (p),
     divider(&verticalLayout, 1, false), codeEditor(codeDocument, nullptr)
 {
-   // Menu Bar Buttons
+    CsoundThreaded csound;
+    // Menu Bar Buttons
     addAndMakeVisible(openButton);
     addAndMakeVisible(saveButton);
     addAndMakeVisible(saveAsButton);

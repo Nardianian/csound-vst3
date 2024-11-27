@@ -40,10 +40,10 @@
 #ifdef SWIG
 %module csnd6
 %{
-#include "csound.hpp"
+#import <CsoundLib64/csound.hpp>
 %}
 #else
-#include "csound.hpp"
+#import <CsoundLib64/csound.hpp>
 #ifdef __BUILDING_CSOUND_INTERFACES
 #endif
 

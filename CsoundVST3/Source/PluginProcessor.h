@@ -9,6 +9,7 @@
 #pragma once
 
 #include <JuceHeader.h>
+#include "csound_threaded.hpp"
 
 //==============================================================================
 /**
@@ -52,6 +53,8 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
+    CsoundThreaded csound;
+    juce::String csd;
 
 private:
     //==============================================================================

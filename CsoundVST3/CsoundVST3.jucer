@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="ktLasV" name="CsoundVST3" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1">
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginEditorRequiresKeys,pluginIsSynth"
+              companyName="Irreducible Productions" companyWebsite="https://michaelgogins.tumblr.com"
+              companyEmail="michael.gogins.gmail.com">
   <MAINGROUP id="LqzlLf" name="CsoundVST3">
     <GROUP id="{F1857533-76E2-0618-E2D7-AEC126AA9CC7}" name="Source">
       <FILE id="DIRoQJ" name="PluginProcessor.cpp" compile="1" resource="0"
@@ -30,7 +32,8 @@
   </MODULES>
   <JUCEOPTIONS JUCE_STRICT_REFCOUNTEDPOINTER="1" JUCE_VST3_CAN_REPLACE_VST2="0"/>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX">
+    <XCODE_MAC targetFolder="Builds/MacOSX" frameworkSearchPaths="/Library/Frameworks"
+               extraCustomFrameworks="CsoundLib64">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug" targetName="CsoundVST3"/>
         <CONFIGURATION isDebug="0" name="Release" targetName="CsoundVST3"/>
