@@ -90,34 +90,51 @@ void CsoundVST3AudioProcessorEditor::resized()
     setWantsKeyboardFocus(true);
  }
 
-// Button Click Handler
 void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
 {
     if (button == &openButton)
     {
-        statusBar.setText("Open button clicked", juce::dontSendNotification);
+        statusBar.setText("Load csd...", juce::dontSendNotification);
+        fileChooser = std::make_unique<juce::FileChooser> ("Please select a .csd file to open...",
+                                                   juce::File::getSpecialLocation (juce::File::userHomeDirectory),
+                                                   "*.csd");
+        auto folderChooserFlags = juce::FileBrowserComponent::openMode | juce::FileBrowserComponent::canSelectFiles;
+        fileChooser->launchAsync (folderChooserFlags, [this] (const juce::FileChooser& chooser)
+        {
+            csd_file = chooser.getResult();
+            DBG("Selected file to open: " << csd_file.getFullPathName());
+            if (csd_file.existsAsFile())
+            {
+                audioProcessor.csd = csd_file.loadFileAsString();
+                codeEditor.loadContent(audioProcessor.csd);
+            }
+            else
+            {
+                DBG("The selected file does not exist or is not a file.");
+            }
+
+        });
     }
     else if (button == &saveButton)
     {
-        statusBar.setText("Save button clicked", juce::dontSendNotification);
+        statusBar.setText("Save...", juce::dontSendNotification);
     }
     else if (button == &saveAsButton)
     {
-        statusBar.setText("Save As button clicked", juce::dontSendNotification);
+        statusBar.setText("Save as...", juce::dontSendNotification);
     }
     else if (button == &playButton)
     {
-        statusBar.setText("Play button clicked", juce::dontSendNotification);
+        statusBar.setText("Play...", juce::dontSendNotification);
     }
     else if (button == &stopButton)
     {
-        statusBar.setText("Stop button clicked", juce::dontSendNotification);
+        statusBar.setText("Stop...", juce::dontSendNotification);
     }
     else if (button == &aboutButton)
     {
-        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
-                                               "About",
-                                               "This is CsoundVST.vst3 by Michael Gogins. For help see:\n\nhttps://github.com/gogins/csound-vst3");
+        juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, "About CsoundVST",
+                                                              "This is CsoundVST.vst3 by Michael Gogins. It loads Csound .csd files and plays them as VST3 synthesizers or effects. MIDI channel plus 1 is Csound instrument number (p1), MIDI key is pitch (p4), MIDI velocity is loudness (p5). For more help, see:\n\nhttps://github.com/gogins/csound-vst3");
     }
 
 }
