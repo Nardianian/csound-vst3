@@ -33,24 +33,22 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
 
     // Status Bar
     statusBar.setText("Ready", juce::dontSendNotification);
-    statusBar.setJustificationType(juce::Justification::centred);
+    statusBar.setJustificationType(juce::Justification::left);
     addAndMakeVisible(statusBar);
 
     // Code Editor
     addAndMakeVisible(codeEditor);
-    codeEditor.setFont(juce::Font(14.0f));
+    codeEditor.setFont(juce::FontOptions("Courier",14.0f, juce::Font::plain));
     codeEditor.setReadOnly(false);
-    //codeEditor.setMultiLine(true);
-    //codeEditor.setReturnKeyStartsNewLine(true);
-
+ 
     // Message Log
     addAndMakeVisible(messageLog);
     messageLog.setReadOnly(true);
 
     // Vertical Layout
-    verticalLayout.setItemLayout(0, -0.2, -0.8, -0.5); // Top window
+    verticalLayout.setItemLayout(0, -0.1, -0.9, -0.5); // Top window
     verticalLayout.setItemLayout(1, 8, 8, 8);          // Divider
-    verticalLayout.setItemLayout(2, -0.2, -0.8, -0.5); // Bottom window
+    verticalLayout.setItemLayout(2, -0.1, -0.9, -0.5); // Bottom window
 
     addAndMakeVisible(divider);
 
@@ -117,7 +115,7 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
     {
         juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon,
                                                "About",
-                                               "This is CsoundVST.vst3 by Michael Gogins. See https://github.com/gogins/csound-vst3 for more information and help.");
+                                               "This is CsoundVST.vst3 by Michael Gogins. For help see:\n\nhttps://github.com/gogins/csound-vst3");
     }
 
 }
