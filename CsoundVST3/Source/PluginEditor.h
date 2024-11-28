@@ -23,11 +23,12 @@ public:
 
 private:
     CsoundVST3AudioProcessor& audioProcessor;
-    juce::CodeDocument codeDocument;
+    juce::CodeDocument csd_document;
+    juce::CodeDocument messages_document;
 
     juce::TextButton openButton{"Load..."};
     juce::TextButton saveButton{"Save"};
-    juce::TextButton saveAsButton{"Save as..."};
+    juce::TextButton saveAsButton{"Save..."};
     juce::TextButton playButton{"Play"};
     juce::TextButton stopButton{"Stop"};
     juce::TextButton aboutButton{"About"};
@@ -35,9 +36,11 @@ private:
     juce::Label statusBar;
     juce::StretchableLayoutManager verticalLayout;
     juce::StretchableLayoutResizerBar divider;
+public:
     juce::CodeEditorComponent codeEditor;
-    juce::TextEditor messageLog;
+    juce::CodeEditorComponent messageLog;
 
+private:
     void buttonClicked(juce::Button* button) override;
     
     std::unique_ptr<juce::FileChooser> fileChooser;

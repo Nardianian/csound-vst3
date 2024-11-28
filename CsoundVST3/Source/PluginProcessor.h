@@ -53,7 +53,9 @@ public:
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-    
+    static void csoundMessageCallback_(CSOUND *, int, const char *, va_list);
+    void csoundMessage(const juce::String message);
+
     CsoundThreaded csound;
     juce::String csd;
 

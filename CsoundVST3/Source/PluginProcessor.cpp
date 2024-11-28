@@ -90,11 +90,45 @@ void CsoundVST3AudioProcessor::changeProgramName (int index, const juce::String&
 {
 }
 
+void CsoundVST3AudioProcessor::csoundMessage(const juce::String message)
+{
+    const juce::MessageManagerLock lock;
+    auto editor = getActiveEditor();
+    if (editor) {
+        auto pluginEditor = reinterpret_cast<CsoundVST3AudioProcessorEditor *>(editor);
+        pluginEditor->messageLog.moveCaretToEnd(false);
+        pluginEditor->messageLog.insertTextAtCaret(message);
+    }
+}
+
+
+void CsoundVST3AudioProcessor::csoundMessageCallback_(CSOUND *csound, int level, const char *format, va_list valist)
+{
+    auto host_data = csoundGetHostData(csound);
+    auto processor = static_cast<CsoundVST3AudioProcessor *>(host_data);
+    char buffer[0x2000];
+    std::vsnprintf(&buffer[0], sizeof(buffer), format, valist);
+    ((CsoundVST3AudioProcessor *)host_data)->csoundMessage(buffer);
+}
+
 //==============================================================================
 void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    csoundMessage("Preparing to play...\r\n");
+    csound.Stop();
+    // (Re-)set the Csound message callback.
+    csound.SetHostData(this);
+    csound.SetMessageCallback(csoundMessageCallback_);
+    // If there is a csd, compile it.
+    if (csd.length()  > 0) {
+        const char* csd_text = strdup(csd.toRawUTF8());
+        if (csd_text) {
+            auto result = csound.CompileCsdText(csd_text);
+            std::free((void *)csd_text);
+            result = csound.Start();
+        }
+    }
+    csoundMessage("Preparing to play.\r\n");
 }
 
 void CsoundVST3AudioProcessor::releaseResources()
@@ -161,7 +195,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
 //==============================================================================
 bool CsoundVST3AudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return true;
 }
 
 juce::AudioProcessorEditor* CsoundVST3AudioProcessor::createEditor()
@@ -172,15 +206,24 @@ juce::AudioProcessorEditor* CsoundVST3AudioProcessor::createEditor()
 //==============================================================================
 void CsoundVST3AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    juce::ValueTree state("CsoundVstState");
+    state.setProperty("csd", csd, nullptr);
+    juce::MemoryOutputStream stream(destData, false);
+    state.writeToStream(stream);
 }
 
 void CsoundVST3AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    juce::ValueTree state = juce::ValueTree::readFromData(data, static_cast<size_t>(sizeInBytes));
+    if (state.isValid() && state.hasType("CsoundVstState"))
+    {
+        csd = state.getProperty("csd", "").toString();
+        auto editor = getActiveEditor();
+        if (editor) {
+            auto pluginEditor = reinterpret_cast<CsoundVST3AudioProcessorEditor *>(editor);
+            pluginEditor->codeEditor.loadContent(csd);
+        }
+    }
 }
 
 //==============================================================================
