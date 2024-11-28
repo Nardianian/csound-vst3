@@ -49,17 +49,25 @@ public:
     void setCurrentProgram (int index) override;
     const juce::String getProgramName (int index) override;
     void changeProgramName (int index, const juce::String& newName) override;
+    void synchronizeScore();
 
     //==============================================================================
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     static void csoundMessageCallback_(CSOUND *, int, const char *, va_list);
     void csoundMessage(const juce::String message);
+    
+    static int midiDeviceOpen(CSOUND *csound, void **userData,
+                              const char *devName);
+    static int midiDeviceClose(CSOUND *csound, void *userData);
+    static int midiRead(CSOUND *csound, void *userData, unsigned char *buf, int nbytes);
+    static int midiWrite(CSOUND *csound, void *userData, const unsigned char *buf, int nBytes);
 
     CsoundThreaded csound;
     juce::String csd;
 
 private:
+    int csound_frame_index;
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)
 };
