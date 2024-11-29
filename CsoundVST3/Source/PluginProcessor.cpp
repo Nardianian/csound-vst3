@@ -136,6 +136,8 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     csound.SetExternalMidiOutOpenCallback(&CsoundVST3AudioProcessor::midiDeviceOpen);
     csound.SetExternalMidiWriteCallback(&CsoundVST3AudioProcessor::midiWrite);
     csound.SetExternalMidiOutCloseCallback(&CsoundVST3AudioProcessor::midiDeviceClose);
+    auto initial_delay_frames = csound.GetKsmps();
+    setLatencySamples(initial_delay_frames);
     // If there is a csd, compile it.
     if (csd.length()  > 0) {
         const char* csd_text = strdup(csd.toRawUTF8());
@@ -146,6 +148,8 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
             csound_frame_index = 0;
         }
     }
+    host_frame_index = 0;
+    host_prior_frame_index = 0;
     csoundMessage("Preparing to play.\r\n");
 }
 
@@ -181,15 +185,6 @@ bool CsoundVST3AudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 }
 #endif
 
-/**
- * Ensure that Csound's score time tracks the host's performance time. This
- * enables having Csound loop along with the host.
- */
-void CsoundVST3AudioProcessor::synchronizeScore()
-{
-    
-}
-
 int CsoundVST3AudioProcessor::midiDeviceOpen(CSOUND *csound, void **userData,
                           const char *devName)
 {
@@ -200,15 +195,84 @@ int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound, void *userData)
 {
     return 1;
 }
-
-int CsoundVST3AudioProcessor::midiRead(CSOUND *csound, void *userData, unsigned char *buf, int nbytes)
+/**
+ * Sends the processor's pending MIDI data, received from the host, to Csound
+ * as a block of binary MIDI data.
+ */
+int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned char *midi_input_buffer, int midi_input_buffer_size)
 {
-    return 1;
+    int midi_input_buffer_index = 0;
+    auto csound_host_data = csoundGetHostData(csound_);
+    CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
+    auto &midi_buffer = *processor->midi_buffer;
+    for (const juce::MidiMessageMetadata metadata : midi_buffer)
+    {
+        auto data = metadata.data;
+        auto size = metadata.numBytes;
+        for (int i = 0; i < size; ++i, ++midi_input_buffer_index)
+        {
+            midi_input_buffer[midi_input_buffer_index++] = data[i];
+        }
+    }
+    return midi_input_buffer_index;
 }
 
-int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound, void *userData, const unsigned char *buf, int nBytes)
+/**
+ * Csound's MIDI driver calls this for each MIDI output channel message, and
+ * the processor adds the  MIDI output buffer to the processor's midi_buffer.
+ */
+int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const unsigned char *midi_output_buffer, int midi_output_buffer_size)
 {
-    return 1;
+    int result = 0;
+    auto csound_host_data = csoundGetHostData(csound_);
+    CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
+    processor->midi_buffer->addEvent(midi_output_buffer, midi_output_buffer_size, static_cast<int>(processor->host_frame_index));
+    return result;
+}
+
+/**
+ * Ensures that Csound's score time tracks the host's performance time. This
+ * causes Csound to loop in its own score along with the host.
+ *
+ * This function is called from processBlock before that function processes any
+ * samples. Therefore, the times are always aligned with the start of the block.
+ *
+ * TODO: What if track has nonzero start -- is that possible?
+ */
+void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position)
+{
+    if (play_head_position->getIsPlaying() == false)
+    {
+        return;
+    }
+    juce::Optional<int64_t> optional_host_frame_index = play_head_position->getTimeInSamples();
+    if (optional_host_frame_index == false)
+    {
+        return;
+    }
+    host_frame_index = *optional_host_frame_index;
+    // Here we see if the host is looping.
+    if (host_frame_index < host_prior_frame_index)
+    {
+        juce::Optional<double> optional_host_frame_seconds = play_head_position->getTimeInSeconds();
+        if (optional_host_frame_seconds == true)
+        {
+            // We recompile to ensure that Csound's alwayson opcode works when
+            // looping.
+            if (csd.length()  > 0) {
+                const char* csd_text = strdup(csd.toRawUTF8());
+                if (csd_text) {
+                    auto result = csound.CompileCsdText(csd_text);
+                    std::free((void *)csd_text);
+                    result = csound.Start();
+                    csound_frame_index = 0;
+                }
+            }
+            auto host_frame_seconds = *optional_host_frame_seconds;
+            csound.SetScoreOffsetSeconds(host_frame_seconds);
+        }
+    }
+    host_prior_frame_index = host_frame_index;
 }
 
 /**
@@ -222,8 +286,20 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound, void *userData, const un
  */
 void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
+    auto play_head = getPlayHead();
+    auto play_head_position = play_head->getPosition();
+    if (play_head_position->getIsPlaying() == false)
+    {
+        return;
+    }
+    if (csound.IsPlaying() == false)
+    {
+        return;
+    }
+    synchronizeScore(play_head_position);
     juce::ScopedNoDenormals noDenormals;
-    synchronizeScore();
+    audio_buffer = std::make_shared<juce::AudioBuffer<float>>(buffer);
+    midi_buffer = std::make_shared<juce::MidiBuffer>(midiMessages);
     auto host_input_channels  = getTotalNumInputChannels();
     auto host_output_channels = getTotalNumOutputChannels();
     auto csound_input_channels = csound.GetNchnlsInput();
@@ -233,17 +309,29 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     auto csound_frame_end = csound_frames + 1;
     auto spin = csound.GetSpin();
     auto spout = csound.GetSpout();
-    // Loop to process input channels and generate output channels.
-    // MIDI goes to Csound, and input audio is copied to spin.
-    // If the frame index goes past the end of spout,
-    // call csoundPerformKsmps.
-    // Spout is copied to output channels.
-    // Unused output channels are zeroed.
-    // The MIDI is cleared, and replaced with any output from Csound.
-    
-    
-    
-
+    for(auto host_frame_index_ = 0; host_frame_index_ < host_frames; host_frame_index_++)
+    {
+        // Copy the host's _current_ audio output to Csound's audio input.
+        for(auto channel_index = 0; channel_index < host_input_channels; channel_index++)
+        {
+            spin[(csound_frame_index * channel_index) + channel_index] = buffer.getSample(channel_index, host_frame_index_);//hostInput[channelI][hostFrameI];
+        }
+        // Copy Csound's _previous_ audio output to the host's audio input.
+        for(auto channel_index = 0; channel_index < host_output_channels; channel_index++) {
+            buffer.setSample(channel_index, host_frame_index_, spout[(csound_frame_index * csound_output_channels) + csound_frame_index] * outputScale);
+            spout[(channel_index * csound_output_channels) + channel_index] = 0.0;
+        }
+        csound_frame_index++;
+        // If Csound's output buffer has been filled, reset Csound's frame index,
+        // and perform the next buffer.
+        if(csound_frame_index > csound_frame_end) {
+            csound_frame_index = 0;
+            csound.PerformKsmps();
+        }
+    }
+    // Clear the host buffers.
+    buffer.clear();
+    midiMessages.clear();
 }
 
 //==============================================================================

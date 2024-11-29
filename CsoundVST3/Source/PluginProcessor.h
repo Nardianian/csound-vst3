@@ -62,12 +62,22 @@ public:
     static int midiDeviceClose(CSOUND *csound, void *userData);
     static int midiRead(CSOUND *csound, void *userData, unsigned char *buf, int nbytes);
     static int midiWrite(CSOUND *csound, void *userData, const unsigned char *buf, int nBytes);
+    void synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position);
 
     CsoundThreaded csound;
     juce::String csd;
-
+    
 private:
+    static constexpr double inputScale = 32767.0;
+    static constexpr double outputScale = (1.0 / 32767.0);
+
+    // These five are valid only during processBlock.
     int csound_frame_index;
+    int64_t host_frame_index;
+    int64_t host_prior_frame_index;
+    std::shared_ptr< juce::AudioBuffer<float> > audio_buffer;
+    std::shared_ptr<juce::MidiBuffer> midi_buffer;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)
 };
