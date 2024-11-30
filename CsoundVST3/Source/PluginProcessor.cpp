@@ -124,6 +124,7 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     }
     csoundMessage("Preparing to play...\r\n");
     csound.Stop();
+    csound.Reset();
     // (Re-)set the Csound message callback.
     csound.SetHostData(this);
     csound.SetMessageCallback(csoundMessageCallback_);
@@ -148,9 +149,16 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
             csound_frame_index = 0;
         }
     }
+    host_input_channels  = getTotalNumInputChannels();
+    host_output_channels = getTotalNumOutputChannels();
+    csound_input_channels = csound.GetNchnlsInput();
+    csound_output_channels = csound.GetNchnls();
+    input_channels = std::max(host_input_channels, csound_input_channels);
+    output_channels = std::max(host_output_channels, csound_output_channels);
     host_frame_index = 0;
     host_prior_frame_index = 0;
-    csoundMessage("Preparing to play.\r\n");
+    csound.keep_running = true;
+    csoundMessage("Prepared to play.\r\n");
 }
 
 void CsoundVST3AudioProcessor::releaseResources()
@@ -185,14 +193,19 @@ bool CsoundVST3AudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
 }
 #endif
 
-int CsoundVST3AudioProcessor::midiDeviceOpen(CSOUND *csound, void **userData,
+int CsoundVST3AudioProcessor::midiDeviceOpen(CSOUND *csound_, void **user_data,
                           const char *devName)
 {
+    auto csound_host_data = csoundGetHostData(csound_);
+    CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
+    *user_data = (void *)csound_host_data;
     return 1;
 }
 
-int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound, void *userData)
+int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound_, void *user_data)
 {
+    auto csound_host_data = csoundGetHostData(csound_);
+    CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     return 1;
 }
 /**
@@ -283,55 +296,55 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
  * and may not be the same on every call.
  *
  * Input data in the buffers is replaced by output data, or zeroed.
+ *
+ * TODO: Push up unnecessary repetitions of calls.
+ * TODO: Clear output after reading inputs, then fill outputs.
  */
 void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
     auto play_head = getPlayHead();
     auto play_head_position = play_head->getPosition();
-    if (play_head_position->getIsPlaying() == false)
-    {
-        return;
-    }
     if (csound.IsPlaying() == false)
     {
         return;
     }
+    //if (play_head_position->getIsPlaying() == false)
+    //{
+    //    return;
+    //}
     synchronizeScore(play_head_position);
     juce::ScopedNoDenormals noDenormals;
     audio_buffer = std::make_shared<juce::AudioBuffer<float>>(buffer);
     midi_buffer = std::make_shared<juce::MidiBuffer>(midiMessages);
-    auto host_input_channels  = getTotalNumInputChannels();
-    auto host_output_channels = getTotalNumOutputChannels();
-    auto csound_input_channels = csound.GetNchnlsInput();
-    auto csound_output_channels = csound.GetNchnls();
     auto host_frames = buffer.getNumSamples();
     auto csound_frames = csound.GetKsmps();
     auto csound_frame_end = csound_frames + 1;
     auto spin = csound.GetSpin();
     auto spout = csound.GetSpout();
-    for(auto host_frame_index_ = 0; host_frame_index_ < host_frames; host_frame_index_++)
+    if (spout == nullptr)
     {
-        // Copy the host's _current_ audio output to Csound's audio input.
-        for(auto channel_index = 0; channel_index < host_input_channels; channel_index++)
+        return;
+    }
+    for (auto host_frame_index_ = 0; host_frame_index_ < host_frames; host_frame_index_++)
+    {
+        // Copy the host's _current_ audio buffer to Csound's audio input.
+        for (auto channel_index = 0; channel_index < input_channels; channel_index++)
         {
-            spin[(csound_frame_index * channel_index) + channel_index] = buffer.getSample(channel_index, host_frame_index_);//hostInput[channelI][hostFrameI];
+            spin[(csound_frame_index * input_channels) + channel_index] = buffer.getSample(channel_index, host_frame_index_);
         }
-        // Copy Csound's _previous_ audio output to the host's audio input.
-        for(auto channel_index = 0; channel_index < host_output_channels; channel_index++) {
-            buffer.setSample(channel_index, host_frame_index_, spout[(csound_frame_index * csound_output_channels) + csound_frame_index] * outputScale);
-            spout[(channel_index * csound_output_channels) + channel_index] = 0.0;
+        // Copy Csound's _previous_ audio output to the host's audio buffer.
+        for (auto channel_index = 0; channel_index < output_channels; channel_index++) {
+            buffer.setSample(channel_index, host_frame_index_, spout[(csound_frame_index * output_channels) + csound_frame_index] * outputScale);
+            spout[(csound_frame_index * output_channels) + csound_frame_index] = 0.0;
         }
         csound_frame_index++;
         // If Csound's output buffer has been filled, reset Csound's frame index,
         // and perform the next buffer.
-        if(csound_frame_index > csound_frame_end) {
+        if (csound_frame_index > csound_frame_end) {
             csound_frame_index = 0;
             csound.PerformKsmps();
         }
     }
-    // Clear the host buffers.
-    buffer.clear();
-    midiMessages.clear();
 }
 
 //==============================================================================

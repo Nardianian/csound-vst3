@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
--f -h -+rtmidi=null -M0 -d -n -m7 --midi-key=4 --midi-velocity=5
+-f -h --midi-key=4 --midi-velocity=5 -d -m160 -+msg_color=0 --daemon
 </CsOptions>
 <CsLicense>
 

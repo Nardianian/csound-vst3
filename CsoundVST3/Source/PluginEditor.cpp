@@ -40,7 +40,6 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
 
     // Code Editor
     addAndMakeVisible(codeEditor);
-    codeEditor.setFont(juce::FontOptions("Courier",14.0f, juce::Font::plain));
     codeEditor.setReadOnly(false);
  
     // Message Log

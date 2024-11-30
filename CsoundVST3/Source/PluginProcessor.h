@@ -70,6 +70,13 @@ public:
 private:
     static constexpr double inputScale = 32767.0;
     static constexpr double outputScale = (1.0 / 32767.0);
+    
+    int host_input_channels;
+    int host_output_channels;
+    int csound_input_channels;
+    int csound_output_channels;
+    int input_channels;
+    int output_channels;
 
     // These five are valid only during processBlock.
     int csound_frame_index;
