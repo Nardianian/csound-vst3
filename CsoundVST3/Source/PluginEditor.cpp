@@ -177,6 +177,8 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
         juce::MessageManagerLock lock;
         audioProcessor.suspendProcessing(true);
         audioProcessor.csound.Stop();
+        audioProcessor.csound.Cleanup();
+        audioProcessor.csound.Reset();
         audioProcessor.suspendProcessing(false);
     }
     else if (button == &aboutButton)

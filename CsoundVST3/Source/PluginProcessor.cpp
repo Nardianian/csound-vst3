@@ -115,8 +115,12 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
 
     }
     csoundMessage("Preparing to play...\r\n");
-    csound.Stop();
-    csound.Reset();
+    if (csound.IsPlaying() == true)
+    {
+        csound.Stop();
+        csound.Cleanup();
+        csound.Reset();
+    }
     // (Re-)set the Csound message callback.
     csound.SetHostData(this);
     csound.SetMessageCallback(csoundMessageCallback_);
@@ -203,19 +207,18 @@ int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound_, void *user_data)
 /**
  * Called by Csound every kperiod to read incoming MIDI data from the host.
  */
-int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned char *midi_input_buffer, int midi_input_buffer_size)
+int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned char *midi_buffer, int midi_buffer_size)
 {
     int midi_input_buffer_index = 0;
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
-    auto &midi_buffer = *processor->midi_buffer;
-    for (const juce::MidiMessageMetadata metadata : midi_buffer)
+    for (const juce::MidiMessageMetadata metadata : processor->midi_input_buffer)
     {
         auto data = metadata.data;
         auto size = metadata.numBytes;
         for (int i = 0; i < size; ++i, ++midi_input_buffer_index)
         {
-            midi_input_buffer[midi_input_buffer_index++] = data[i];
+            midi_buffer[midi_input_buffer_index++] = data[i];
         }
     }
     return midi_input_buffer_index;
@@ -224,12 +227,12 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
 /**
  * Called by Csound everry kperiod to write outcoming MIDI data to the host.
  */
-int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const unsigned char *midi_output_buffer, int midi_output_buffer_size)
+int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const unsigned char *midi_buffer, int midi_buffer_size)
 {
     int result = 0;
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
-    processor->midi_buffer->addEvent(midi_output_buffer, midi_output_buffer_size, static_cast<int>(processor->host_frame_index));
+    processor->midi_output_buffer.addEvent(midi_buffer, midi_buffer_size, static_cast<int>(processor->host_frame_index));
     return result;
 }
 
@@ -303,8 +306,6 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     //}
     synchronizeScore(play_head_position);
     juce::ScopedNoDenormals noDenormals;
-    audio_buffer = std::make_shared<juce::AudioBuffer<float>>(buffer);
-    midi_buffer = std::make_shared<juce::MidiBuffer>(midiMessages);
     auto host_frames = buffer.getNumSamples();
     auto csound_frames = csound.GetKsmps();
     auto csound_frame_end = csound_frames + 1;
@@ -314,6 +315,8 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     {
         return;
     }
+    // Copy the host's MIDI buffer (input) to Csound's MIDI input buffer.
+    midi_input_buffer = midiMessages;
     for (auto audio_buffer_frame = 0; audio_buffer_frame < host_frames; audio_buffer_frame++, host_frame_index++)
     {
         // Copy the host's _current_ audio buffer (input) to Csound's audio input.
@@ -347,6 +350,8 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
             csound_frame_index = 0;
             csound.PerformKsmps();
         }
+        // Copy Csound's output MIDI buffer to the host's MIDI (output) buffer.
+        midiMessages = midi_output_buffer;
     }
 }
 

@@ -79,16 +79,12 @@ private:
     int input_channels;
     int output_channels;
     
-
-
-
-
     // These five are valid only during processBlock.
     int csound_frame_index;
     int64_t host_frame_index;
     int64_t host_prior_frame_index;
-    std::shared_ptr< juce::AudioBuffer<float> > audio_buffer;
-    std::shared_ptr<juce::MidiBuffer> midi_buffer;
+    juce::MidiBuffer midi_input_buffer;
+    juce::MidiBuffer midi_output_buffer;;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)

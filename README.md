@@ -51,12 +51,12 @@ plugins directory. For example, in macOS, that would normally be the user's
 
  1. Write a Csound .csd file that optionally outputs stereo audio, optionally 
     accepts stereo audio input, and optionally accepts MIDI channel messages. 
-    The DAW's MIDI note on and off messages to CsoundVST3 are automatically 
-    mapped to Csound `i` statement pfield 1 (as MIDI channel + 1), pfield 4 
-    (as MIDI key), and pfield 5 (as MIDI velocity). The DAW's MIDI control 
-    change messages to CsoundVST3 are automatically mapped to Csound control 
-    channels named `daw_ch<###>_cc<###>`, e.g. `daw_ch000_cc065`. These can 
-    include RPNs and NRPNs.
+    The `<CsOptions>` element should map MIDI channel message fields to your 
+    Csound instrument pfields, and should open MIDI inputs and, if needed, 
+    MIDI outputs, like this:
+    ```
+
+    ```
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 
@@ -68,7 +68,7 @@ plugins directory. For example, in macOS, that would normally be the user's
     enable the __**Send all keyboard input to plug-in...**__ item.
  
  5. Click on the **_Play_** button to make sure that the .csd compiles and
-    runs. You can use a score in your DAW, or a MIDI controlleer, or a
+    runs. You can use a score in your DAW, or a MIDI controller, or a
     virtual keyboard to play notes using the .csd.
 
  7. Save your DAW project, and re-open it to make sure that your plugin 
@@ -77,7 +77,11 @@ plugins directory. For example, in macOS, that would normally be the user's
 This plugin does not implement presets. The entire state of the plugin is the 
 .csd file, which is saved and loaded as part of the DAW project. However, you 
 can have as many CsoundVST3 plugins on as many tracks as you like, each with 
-its own independent .csd file.
+its own independent .csd file. 
+
+If you need something like presets, you can map MIDI controllers to Csound 
+control variables in your csd, and then you can save the state of your MIDI 
+controllers in your DAW project.
 
 ## Release notes for version 0.1beta
 
