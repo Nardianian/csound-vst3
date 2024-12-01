@@ -36,20 +36,12 @@ const juce::String CsoundVST3AudioProcessor::getName() const
 
 bool CsoundVST3AudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
     return true;
-   #else
-    return false;
-   #endif
 }
 
 bool CsoundVST3AudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
     return true;
-   #else
-    return false;
-   #endif
 }
 
 bool CsoundVST3AudioProcessor::isMidiEffect() const
@@ -92,13 +84,12 @@ void CsoundVST3AudioProcessor::changeProgramName (int index, const juce::String&
 
 void CsoundVST3AudioProcessor::csoundMessage(const juce::String message)
 {
-    const juce::MessageManagerLock lock;
-    auto editor = getActiveEditor();
-    if (editor) {
-        auto pluginEditor = reinterpret_cast<CsoundVST3AudioProcessorEditor *>(editor);
-        pluginEditor->messageLog.moveCaretToEnd(false);
-        pluginEditor->messageLog.insertTextAtCaret(message);
+    if (messageCallback)
+    {
+        messageCallback(message);
     }
+    sendChangeMessage(); // Notify listeners that something has changed.
+    DBG(message);
 }
 
 void CsoundVST3AudioProcessor::csoundMessageCallback_(CSOUND *csound, int level, const char *format, va_list valist)
@@ -115,6 +106,7 @@ void CsoundVST3AudioProcessor::csoundMessageCallback_(CSOUND *csound, int level,
  */
 void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    juce::MessageManagerLock lock;
     auto editor = getActiveEditor();
     if (editor)
     {
@@ -199,18 +191,17 @@ int CsoundVST3AudioProcessor::midiDeviceOpen(CSOUND *csound_, void **user_data,
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     *user_data = (void *)csound_host_data;
-    return 1;
+    return 0;
 }
 
 int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound_, void *user_data)
 {
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
-    return 1;
+    return 0;
 }
 /**
- * Sends the processor's pending MIDI data, received from the host, to Csound
- * as a block of binary MIDI data.
+ * Called by Csound every kperiod to read incoming MIDI data from the host.
  */
 int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned char *midi_input_buffer, int midi_input_buffer_size)
 {
@@ -231,8 +222,7 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
 }
 
 /**
- * Csound's MIDI driver calls this for each MIDI output channel message, and
- * the processor adds the  MIDI output buffer to the processor's midi_buffer.
+ * Called by Csound everry kperiod to write outcoming MIDI data to the host.
  */
 int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const unsigned char *midi_output_buffer, int midi_output_buffer_size)
 {
@@ -289,7 +279,7 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
 }
 
 /**
- * Calls csoundPerformKsmps to do the actual synthesis.
+ * Calls csoundPerformKsmps to do the actual processing.
  *
  * The number of input channels may not equal the number of output channels.
  * The number of frames in the buffer may not be the same as Csound's ksmps,
@@ -297,8 +287,7 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
  *
  * Input data in the buffers is replaced by output data, or zeroed.
  *
- * TODO: Push up unnecessary repetitions of calls.
- * TODO: Clear output after reading inputs, then fill outputs.
+ * TODO: Does this code epend on Csound's ksmps equalling host's block size?
  */
 void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)
 {
@@ -325,17 +314,31 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& buffer, j
     {
         return;
     }
-    for (auto host_frame_index_ = 0; host_frame_index_ < host_frames; host_frame_index_++)
+    for (auto audio_buffer_frame = 0; audio_buffer_frame < host_frames; audio_buffer_frame++, host_frame_index++)
     {
-        // Copy the host's _current_ audio buffer to Csound's audio input.
+        // Copy the host's _current_ audio buffer (input) to Csound's audio input.
         for (auto channel_index = 0; channel_index < input_channels; channel_index++)
         {
-            spin[(csound_frame_index * input_channels) + channel_index] = buffer.getSample(channel_index, host_frame_index_);
+            if (channel_index < csound_input_channels)
+            {
+                spin[(csound_frame_index * input_channels) + channel_index] = buffer.getSample(channel_index, audio_buffer_frame);
+            }
+            else
+            {
+                spin[(csound_frame_index * input_channels) + channel_index] = 0.;
+            }
         }
-        // Copy Csound's _previous_ audio output to the host's audio buffer.
-        for (auto channel_index = 0; channel_index < output_channels; channel_index++) {
-            buffer.setSample(channel_index, host_frame_index_, spout[(csound_frame_index * output_channels) + csound_frame_index] * outputScale);
-            spout[(csound_frame_index * output_channels) + csound_frame_index] = 0.0;
+        // Copy Csound's _previous_ audio output to the host's (output) audio buffer.
+        for (auto channel_index = 0; channel_index < output_channels; channel_index++)
+        {
+            if (channel_index < csound_output_channels)
+            {
+                buffer.setSample(channel_index, audio_buffer_frame, spout[(csound_frame_index * output_channels) + csound_frame_index] * outputScale);
+            }
+            else
+            {
+                buffer.setSample(channel_index, audio_buffer_frame, 0.);
+            }
         }
         csound_frame_index++;
         // If Csound's output buffer has been filled, reset Csound's frame index,
@@ -369,6 +372,7 @@ void CsoundVST3AudioProcessor::getStateInformation (juce::MemoryBlock& destData)
 
 void CsoundVST3AudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
+    juce::MessageManagerLock lock;
     juce::ValueTree state = juce::ValueTree::readFromData(data, static_cast<size_t>(sizeInBytes));
     if (state.isValid() && state.hasType("CsoundVstState"))
     {
@@ -387,3 +391,5 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new CsoundVST3AudioProcessor();
 }
+
+

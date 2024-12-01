@@ -11,7 +11,7 @@
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
 
-class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Button::Listener
+class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor, public juce::Button::Listener, public juce::ChangeListener
 {
 public:
     CsoundVST3AudioProcessorEditor (CsoundVST3AudioProcessor&);
@@ -20,6 +20,8 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
+    void appendToMessageLog(const juce::String& message);
+    void changeListenerCallback(juce::ChangeBroadcaster*) override;
 
 private:
     CsoundVST3AudioProcessor& audioProcessor;

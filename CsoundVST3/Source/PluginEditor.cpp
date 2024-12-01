@@ -53,6 +53,15 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     addAndMakeVisible(divider);
 
     codeEditor.loadContent(audioProcessor.csd);
+    // Set up callback for messages
+    audioProcessor.messageCallback = [this](const juce::String& message) {
+        juce::MessageManager::callAsync([this, message]() {
+            appendToMessageLog(message);
+        });
+    };
+
+    // Listen for changes from the processor
+    audioProcessor.addChangeListener(this);
     
     setSize(800, 600);
 }
@@ -108,10 +117,11 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
             {
                 audioProcessor.csd = csd_file.loadFileAsString();
                 codeEditor.loadContent(audioProcessor.csd);
-            }
+                statusBar.setText("Csd loaded.", juce::dontSendNotification);
+           }
             else
             {
-                DBG("The selected file does not exist or is not a file.");
+                statusBar.setText("The selected file does not exist or is not a file.", juce::dontSendNotification);
             }
 
         });
@@ -175,5 +185,16 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
                                                               "This is CsoundVST.vst3 by Michael Gogins. It loads Csound .csd files and plays them as VST3 synthesizers or effects. MIDI channel plus 1 is Csound instrument number (p1), MIDI key is pitch (p4), MIDI velocity is loudness (p5). For more help, see:\n\nhttps://github.com/gogins/csound-vst3.");
     }
 
+}
+
+void CsoundVST3AudioProcessorEditor::appendToMessageLog(const juce::String& message)
+{
+    messageLog.moveCaretToEnd(false); // Move caret to end to append.
+    messageLog.insertTextAtCaret(message);
+}
+
+void CsoundVST3AudioProcessorEditor::changeListenerCallback(juce::ChangeBroadcaster*)
+{
+    // Handle other processor-to-editor communication here if needed.
 }
 

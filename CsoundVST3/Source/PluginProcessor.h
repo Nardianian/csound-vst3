@@ -14,7 +14,7 @@
 //==============================================================================
 /**
 */
-class CsoundVST3AudioProcessor  : public juce::AudioProcessor
+class CsoundVST3AudioProcessor  : public juce::AudioProcessor, public juce::ChangeBroadcaster
 {
 public:
     //==============================================================================
@@ -65,6 +65,7 @@ public:
     void synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position);
 
     CsoundThreaded csound;
+    std::function<void(const juce::String&)> messageCallback;
     juce::String csd;
     
 private:
@@ -77,6 +78,10 @@ private:
     int csound_output_channels;
     int input_channels;
     int output_channels;
+    
+
+
+
 
     // These five are valid only during processBlock.
     int csound_frame_index;
