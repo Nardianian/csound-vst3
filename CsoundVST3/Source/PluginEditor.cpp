@@ -62,7 +62,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
 
     // Listen for changes from the processor
     audioProcessor.addChangeListener(this);
-    
+
     setSize(800, 600);
 }
 
@@ -84,11 +84,17 @@ void CsoundVST3AudioProcessorEditor::resized()
     // Menu Bar
     auto menuBar = bounds.removeFromTop(30);
     openButton.setBounds(menuBar.removeFromLeft(80));
-    // saveButton.setBounds(menuBar.removeFromLeft(80));
+    openButton.setTooltip("Open a .csd file");
+    saveButton.setBounds(menuBar.removeFromLeft(80));
+    saveButton.setTooltip("Save edited text to the plugin state");
     saveAsButton.setBounds(menuBar.removeFromLeft(100));
+    saveAsButton.setTooltip("Save edited text to a .csd file");
     playButton.setBounds(menuBar.removeFromLeft(80));
+    playButton.setTooltip("Stop Csound and recompile the .csd");
     stopButton.setBounds(menuBar.removeFromLeft(80));
+    stopButton.setTooltip("Stop the Csound performance");
     aboutButton.setBounds(menuBar.removeFromLeft(100));
+    aboutButton.setTooltip("About CsoundVST3");
 
     // Status Bar
     auto statusBarHeight = 20;
@@ -126,15 +132,14 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
 
         });
     }
-    /*
     else if (button == &saveButton)
     {
-        statusBar.setText("Save...", juce::dontSendNotification);
+        audioProcessor.csd = codeEditor.getDocument().getAllContent();
+        statusBar.setText("Saved", juce::dontSendNotification);
     }
-    */
     else if (button == &saveAsButton)
     {
-        statusBar.setText("Save csd...", juce::dontSendNotification);
+        statusBar.setText("Save csd as...", juce::dontSendNotification);
         fileChooser = std::make_unique<juce::FileChooser> ("Please select a .csd file to save to...",
                                                            juce::File::getSpecialLocation (juce::File::userHomeDirectory),
                                                            "*.csd");
@@ -164,9 +169,9 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
     {
         statusBar.setText("Play...", juce::dontSendNotification);
         juce::MessageManagerLock lock;
+        audioProcessor.csd = codeEditor.getDocument().getAllContent();
         auto frames_per_second = audioProcessor.getSampleRate();
         auto frame_size = audioProcessor.getBlockSize();
-        auto play_head = audioProcessor.getPlayHead();
         audioProcessor.suspendProcessing(true);
         audioProcessor.prepareToPlay(frames_per_second, frame_size);
         audioProcessor.suspendProcessing(false);
@@ -176,6 +181,7 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
         statusBar.setText("Stop...", juce::dontSendNotification);
         juce::MessageManagerLock lock;
         audioProcessor.suspendProcessing(true);
+        audioProcessor.csoundIsPlaying = false;
         audioProcessor.csound.Stop();
         audioProcessor.csound.Cleanup();
         audioProcessor.csound.Reset();

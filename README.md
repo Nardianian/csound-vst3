@@ -55,8 +55,11 @@ plugins directory. For example, in macOS, that would normally be the user's
     Csound instrument pfields, and should open MIDI inputs and, if needed, 
     MIDI outputs, like this:
     ```
-
+    --midi-key=4 --midi-velocity=5 -m160 -+msg_color=0 --daemon  
     ```
+    You should ensure that your Csound orchestra outputs signals within the 
+    interval [-1, +1]. This can be adjusted by setting 0dbfs in your orchestra 
+    header.
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 
@@ -74,7 +77,7 @@ plugins directory. For example, in macOS, that would normally be the user's
  7. Save your DAW project, and re-open it to make sure that your plugin 
     and its .csd have been loaded.
 
-This plugin does not implement presets. The entire state of the plugin is the 
+CsoundVST3 does not implement presets. The entire state of the plugin is the 
 .csd file, which is saved and loaded as part of the DAW project. However, you 
 can have as many CsoundVST3 plugins on as many tracks as you like, each with 
 its own independent .csd file. 

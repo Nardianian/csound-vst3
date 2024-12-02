@@ -25,10 +25,7 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
-
     void processBlock (juce::AudioBuffer<float>&, juce::MidiBuffer&) override;
 
     //==============================================================================
@@ -64,23 +61,26 @@ public:
     static int midiWrite(CSOUND *csound, void *userData, const unsigned char *buf, int nBytes);
     void synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position);
 
-    CsoundThreaded csound;
+    Csound csound;
+    bool csoundIsPlaying = false;
     std::function<void(const juce::String&)> messageCallback;
     juce::String csd;
     
 private:
     static constexpr double inputScale = 32767.0;
     static constexpr double outputScale = (1.0 / 32767.0);
+    double iodbfs;
     
     int host_input_channels;
     int host_output_channels;
+    int host_channels;
     int csound_input_channels;
     int csound_output_channels;
-    int input_channels;
-    int output_channels;
     
-    // These five are valid only during processBlock.
+    // These are valid only during processBlock.
+    int csound_frames;
     int csound_frame_index;
+    int csound_frame_end;
     int64_t host_frame_index;
     int64_t host_prior_frame_index;
     juce::MidiBuffer midi_input_buffer;
