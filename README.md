@@ -55,11 +55,14 @@ plugins directory. For example, in macOS, that would normally be the user's
     Csound instrument pfields, and should open MIDI inputs and, if needed, 
     MIDI outputs, like this:
     ```
-    --midi-key=4 --midi-velocity=5 -m160 -+msg_color=0 --daemon  
+    -M1 -Q2 --midi-key=4 --midi-velocity=5 -m163 -+msg_color=0 --daemon  
     ```
-    You should ensure that your Csound orchestra outputs signals within the 
-    interval [-1, +1]. This can be adjusted by setting 0dbfs in your orchestra 
-    header.
+    CsoundVST prints a list of available MIDI devices when it compiles the 
+    .csd.
+
+    You should ensure that your Csound orchestra outputs audio samples within 
+    the interval [-1, +1]. This can be adjusted by setting 0dbfs in your 
+    orchestra header.
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 

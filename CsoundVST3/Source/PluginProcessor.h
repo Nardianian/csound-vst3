@@ -82,7 +82,9 @@ private:
     int csound_frame_index;
     int csound_frame_end;
     int64_t host_frame_index;
+    int64_t current_block_frame;
     int64_t host_prior_frame_index;
+    juce::AudioBuffer<float> plugin_audio_input_buffer;
     juce::MidiBuffer midi_input_buffer;
     juce::MidiBuffer midi_output_buffer;;
     

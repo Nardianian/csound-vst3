@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <JUCERPROJECT id="ktLasV" name="CsoundVST3" projectType="audioplug" useAppConfig="0"
-              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginEditorRequiresKeys,pluginIsSynth"
+              addUsingNamespaceToJuceHeader="0" jucerFormatVersion="1" pluginCharacteristicsValue="pluginIsSynth,pluginProducesMidiOut,pluginWantsMidiIn"
               companyName="Irreducible Productions" companyWebsite="https://michaelgogins.tumblr.com"
-              companyEmail="michael.gogins.gmail.com">
+              companyEmail="michael.gogins.gmail.com" pluginVST3Category="Fx,Instrument"
+              pluginChannelConfigs="{0,1},{0,2},{1, 1},{1,2},{2,2}" pluginAUMainType="'aumu'"
+              pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="LqzlLf" name="CsoundVST3">
     <GROUP id="{F1857533-76E2-0618-E2D7-AEC126AA9CC7}" name="Source">
       <FILE id="DIRoQJ" name="PluginProcessor.cpp" compile="1" resource="0"

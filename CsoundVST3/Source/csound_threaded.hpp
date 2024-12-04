@@ -176,9 +176,9 @@ protected:
     }
 public:
     std::atomic<bool> keep_running;
-    CsoundThreaded() : Csound(), keep_running(false), kperiod_callback(nullptr), kperiod_callback_user_data(nullptr) {};
-    CsoundThreaded(CSOUND *csound_) : Csound(csound_), keep_running(false), kperiod_callback(nullptr), kperiod_callback_user_data(nullptr) {};
-    CsoundThreaded(void *host_data) : Csound(host_data), keep_running(false), kperiod_callback(nullptr), kperiod_callback_user_data(nullptr) {};
+    CsoundThreaded() : Csound(), kperiod_callback(nullptr), kperiod_callback_user_data(nullptr), keep_running(false)  {};
+    CsoundThreaded(CSOUND *csound_) : Csound(csound_), kperiod_callback(nullptr), kperiod_callback_user_data(nullptr), keep_running(false) {};
+    CsoundThreaded(void *host_data) : Csound(host_data), kperiod_callback(nullptr), kperiod_callback_user_data(nullptr), keep_running(false) {};
     virtual ~CsoundThreaded()
     {
         Stop();
