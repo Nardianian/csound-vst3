@@ -141,6 +141,7 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     int messages = 0;
+    // Sort here?
     for (const auto metadata : processor->plugin_midi_input_buffer)
     {
         auto data = metadata.data;
@@ -302,9 +303,9 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     int host_sample_rate = getSampleRate();
     snprintf(buffer, sizeof(buffer), "--sample-rate=%d", host_sample_rate);
     csound.SetOption(buffer);
-    int host_frames_per_block = getBlockSize();
-    snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
-    csound.SetOption(buffer);
+    //int host_frames_per_block = getBlockSize();
+    //snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
+    //csound.SetOption(buffer);
     /// snprintf(buffer, sizeof(buffer), "-+msg_color=0");
     /// csound.SetOption(buffer);
     // If there is a csd, compile it.
