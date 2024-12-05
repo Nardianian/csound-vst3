@@ -137,28 +137,33 @@ int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound_, void *user_data)
  */
 int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned char *midi_buffer, int midi_buffer_size)
 {
-    int midi_input_buffer_index = 0;
+    int bytes_read = 0;
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
-    for (const auto metadata : processor->midi_input_buffer)
+    int messages = 0;
+    for (const auto metadata : processor->plugin_midi_input_buffer)
     {
         auto data = metadata.data;
         auto size = metadata.numBytes;
-        auto status = data[0];
-        if (status >= 0x80 && status <= 0xEF)
+        auto frame_index = metadata.samplePosition;
+        auto message = metadata.getMessage();
+        char buffer[0x200];
+        if (message.isNoteOnOrOff() || message.isController())
         {
-            for (int i = 0; i < size; ++i, ++midi_input_buffer_index)
+            messages++;
+#if defined(JUCE_DEBUG)
+        std::snprintf(buffer, sizeof(buffer), "Input MIDI message %5d: message_frame: %7d description: %s", messages, frame_index, message.getDescription().toUTF8());
+        DBG(buffer);
+#endif
+            for (int i = 0; i < size; ++i, ++bytes_read)
             {
-                midi_buffer[midi_input_buffer_index] = data[i];
+                midi_buffer[bytes_read] = data[i];
             }
         }
-        else
-        {
-            DBG("Not a MIDI channel message.");
-        }
     }
-    processor->midi_input_buffer.clear();
-    return midi_input_buffer_index;
+    processor->plugin_midi_input_buffer.clear();
+    DBG("Bytes read:" << bytes_read);
+    return bytes_read;
 }
 
 /**
@@ -171,7 +176,7 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const u
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     // I think the frame index should really be relative to the start of the current block. If so this should be 0 here.
     /// processor->midi_output_buffer.addEvent(midi_buffer, midi_buffer_size, static_cast<int>(processor->host_frame_index));
-    processor->midi_output_buffer.addEvent(midi_buffer, midi_buffer_size, 0);
+    processor->plugin_midi_output_buffer.addEvent(midi_buffer, midi_buffer_size, 0);
     return result;
 }
 
@@ -196,9 +201,9 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
     {
         return;
     }
-    host_frame_index = *optional_host_frame_index;
+    host_frame = *optional_host_frame_index;
     // Here we see if the host is looping.
-    if (host_frame_index < host_prior_frame_index)
+    if (host_frame < host_prior_frame)
     {
         juce::Optional<double> optional_host_frame_seconds = play_head_position->getTimeInSeconds();
         if (optional_host_frame_seconds == true)
@@ -212,14 +217,14 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
                     auto result = csound.CompileCsdText(csd_text);
                     std::free((void *)csd_text);
                     result = csound.Start();
-                    csound_frame_index = 0;
+                    csound_frame = 0;
                 }
             }
             auto host_frame_seconds = *optional_host_frame_seconds;
             csound.SetScoreOffsetSeconds(host_frame_seconds);
         }
     }
-    host_prior_frame_index = host_frame_index;
+    host_prior_frame = host_frame;
 }
 
 /**
@@ -301,7 +306,7 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
             auto result = csound.CompileCsdText(csd_text);
             std::free((void *)csd_text);
             result = csound.Start();
-            csound_frame_index = 0;
+            csound_frame = 0;
         }
     }
     iodbfs = 1. / csound.Get0dBFS();
@@ -310,10 +315,11 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     host_channels = std::max(host_input_channels, host_output_channels);
     csound_input_channels = csound.GetNchnlsInput();
     csound_output_channels = csound.GetNchnls();
-    host_frame_index = 0;
-    host_prior_frame_index = 0;
+    host_frame = 0;
+    host_prior_frame = 0;
     csound_frames = csound.GetKsmps();
-    csound_frame_index = 0;
+    // Vital! Ensures that Csound's block is in sync with the host's block.
+    csound_frame = csound_frames;
     const int host_input_busses = getBusCount(true);
     const int host_output_busses = getBusCount(false);
     csoundMessage(juce::String::formatted("Host input busses:      %3d\n", host_input_busses));
@@ -336,8 +342,6 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
  * and may not be the same on every call.
  *
  * Input data in the buffers is replaced by output data, or zeroed.
- *
- * TODO: Does this code depend on Csound's ksmps equalling host's block size?
  */
 void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audio_buffer, juce::MidiBuffer& host_midi_buffer)
 {
@@ -352,7 +356,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     auto optional_time_in_samples = play_head_position->getTimeInSamples();
     if (optional_time_in_samples)
     {
-        current_block_frame = *optional_time_in_samples;
+        host_block_frame = *optional_time_in_samples;
     }
     //if (play_head_position->getIsPlaying() == false)
     //{
@@ -360,7 +364,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     //}
     synchronizeScore(play_head_position);
     juce::ScopedNoDenormals noDenormals;
-    auto host_frames = host_audio_buffer.getNumSamples();
+    auto host_audio_buffer_frames = host_audio_buffer.getNumSamples();
     auto spin = csound.GetSpin();
     auto spout = csound.GetSpout();
     if (spout == nullptr)
@@ -372,8 +376,6 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     plugin_audio_input_buffer.makeCopyOf(host_audio_input_buffer);
     auto host_audio_output_buffer = getBusBuffer(host_audio_buffer, false, 0);
     host_audio_buffer.clear();
-    midi_input_buffer.clear();
-    midi_input_buffer.addEvents(host_midi_buffer, 0, host_midi_buffer.getNumEvents(), 0);
     // Csound's spin and spout buffers are indexed [frame][channel].
     // The host audio buffer is indexed [channel][frame].
     // As far as I can tell, both `getWritePointer` and `setSample` mark the
@@ -382,46 +384,62 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     // inputs and outputs are overlaid in the buffer, so some channels are
     // re-used. The getBusBuffer function selects the appropriate channel
     // pointers for the indicated buffer.
-    for (auto audio_buffer_frame = 0; audio_buffer_frame < host_frames; )
+    plugin_midi_input_buffer.clear();
+    int messages = 0;
+    for (const auto metadata : host_midi_buffer)
     {
-        csound_frame_index++;
-        if (csound_frame_index >= csound_frames)
+        auto frame_index = metadata.samplePosition;
+        auto message = metadata.getMessage();
+        plugin_midi_input_buffer.addEvent(message, frame_index);
+        char buffer[0x200];
+#if defined(JUCE_DEBUG)
+        messages++;
+        std::snprintf(buffer, sizeof(buffer), "Host MIDI message %5d: buffer frame: %7d description: %s", messages, frame_index, message.getDescription().toUTF8());
+        DBG(buffer);
+#endif
+    }
+    for (host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; )
+    {
+        csound_frame++;
+        if (csound_frame >= csound_frames)
         {
-            DBG(juce::String::formatted("at performKsmps processed: buffer frames: %7d host frames: %7d csound frames: %7d", audio_buffer_frame, host_frame_index, csound_frame_index));
-            csound_frame_index = 0;
+            // Add events to the plugin MIDI input buffer _for just Csound's block_ from the host MIDI buffer.
+            //plugin_midi_input_buffer.clear();
+            //plugin_midi_input_buffer.addEvents(host_midi_buffer, host_audio_buffer_frame, host_audio_buffer_frame + csound_frames, 0);
+            ///DBG(juce::String::formatted("at performKsmps processed: buffer frames: %7d host frames: %7d csound frames: %7d", audio_buffer_frame, host_frame_index, csound_frame_index));
+            csound_frame = 0;
             csound.PerformKsmps();
+            plugin_midi_input_buffer.clear();
         }
         int channel_index;
         for (channel_index = 0; channel_index < host_input_channels; channel_index++)
         {
-            float sample = float(iodbfs * plugin_audio_input_buffer.getSample(channel_index, audio_buffer_frame));
+            float sample = float(iodbfs * plugin_audio_input_buffer.getSample(channel_index, host_audio_buffer_frame));
             if (channel_index < csound_input_channels)
             {
-                spin[(csound_frame_index * csound_input_channels) + channel_index] = double(sample);
+                spin[(csound_frame * csound_input_channels) + channel_index] = double(sample);
             }
          }
         for (channel_index = 0; channel_index < host_output_channels; channel_index++)
         {
             if (channel_index < csound_output_channels)
             {
-                float sample = float(iodbfs * spout[(csound_frame_index * host_output_channels) + csound_frame_index]);
-                host_audio_output_buffer.setSample(channel_index, audio_buffer_frame, sample);
-                spout[(csound_frame_index * csound_output_channels) + channel_index] = double(0);
+                float sample = float(iodbfs * spout[(csound_frame * host_output_channels) + csound_frame]);
+                host_audio_output_buffer.setSample(channel_index, host_audio_buffer_frame, sample);
+                spout[(csound_frame * csound_output_channels) + channel_index] = double(0);
             }
         }
-        audio_buffer_frame++;
-        host_frame_index++;
+        host_audio_buffer_frame++;
+        host_frame++;
     }
     // Copy Csound's output MIDI buffer to the host's MIDI (output) buffer.
-    if (midi_output_buffer.isEmpty() == false)
+    host_midi_buffer.clear();
+    if (plugin_midi_output_buffer.isEmpty() == false)
     {
-        host_midi_buffer.clear();
-        host_midi_buffer.swapWith(midi_output_buffer);
+         //host_midi_buffer.swapWith(plugin_midi_output_buffer);
     }
-    else
-    {
-        host_midi_buffer.clear();
-    }
+    plugin_midi_input_buffer.clear();
+    plugin_midi_output_buffer.clear();
 }
 
 //==============================================================================
@@ -465,5 +483,24 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new CsoundVST3AudioProcessor();
 }
+
+void CsoundVST3AudioProcessor::play()
+{
+    auto frames_per_second = getSampleRate();
+    auto frame_size = getBlockSize();
+    suspendProcessing(true);
+    prepareToPlay(frames_per_second, frame_size);
+    suspendProcessing(false);
+}
+
+void CsoundVST3AudioProcessor::stop()
+{
+    suspendProcessing(true);
+    csoundIsPlaying = false;
+    csound.Stop();
+    csound.Cleanup();
+    csound.Reset();
+    /// suspendProcessing(false);
+ }
 
 

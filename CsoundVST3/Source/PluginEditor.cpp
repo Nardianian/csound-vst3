@@ -41,17 +41,20 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     // Code Editor
     addAndMakeVisible(codeEditor);
     codeEditor.setReadOnly(false);
- 
+    codeEditor.setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkgrey);
+    codeEditor.setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::bisque);
+
     // Message Log
     addAndMakeVisible(messageLog);
     messageLog.setReadOnly(true);
+    messageLog.setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::black);
+    messageLog.setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::lightgreen);
 
     // Vertical Layout
     verticalLayout.setItemLayout(0, -0.1, -0.9, -0.5); // Top window
     verticalLayout.setItemLayout(1, 8, 8, 8);          // Divider
     verticalLayout.setItemLayout(2, -0.1, -0.9, -0.5); // Bottom window
     addAndMakeVisible(divider);
-
     codeEditor.loadContent(audioProcessor.csd);
     // Set up callback for messages
     audioProcessor.messageCallback = [this](const juce::String& message) {
@@ -168,24 +171,14 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
     else if (button == &playButton)
     {
         statusBar.setText("Play...", juce::dontSendNotification);
-        juce::MessageManagerLock lock;
-        audioProcessor.csd = codeEditor.getDocument().getAllContent();
-        auto frames_per_second = audioProcessor.getSampleRate();
-        auto frame_size = audioProcessor.getBlockSize();
-        audioProcessor.suspendProcessing(true);
-        audioProcessor.prepareToPlay(frames_per_second, frame_size);
-        audioProcessor.suspendProcessing(false);
+        ///juce::MessageManagerLock lock;
+        audioProcessor.play();
     }
     else if (button == &stopButton)
     {
         statusBar.setText("Stop...", juce::dontSendNotification);
-        juce::MessageManagerLock lock;
-        audioProcessor.suspendProcessing(true);
-        audioProcessor.csoundIsPlaying = false;
-        audioProcessor.csound.Stop();
-        audioProcessor.csound.Cleanup();
-        audioProcessor.csound.Reset();
-        audioProcessor.suspendProcessing(false);
+        ///juce::MessageManagerLock lock;
+        audioProcessor.stop();
     }
     else if (button == &aboutButton)
     {

@@ -60,6 +60,9 @@ public:
     static int midiRead(CSOUND *csound, void *userData, unsigned char *buf, int nbytes);
     static int midiWrite(CSOUND *csound, void *userData, const unsigned char *buf, int nBytes);
     void synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position);
+    
+    void play();
+    void stop();
 
     Csound csound;
     bool csoundIsPlaying = false;
@@ -79,15 +82,16 @@ private:
     
     // These are valid only during processBlock.
     int csound_frames;
-    int csound_frame_index;
+    int csound_frame;
     int csound_frame_end;
-    int64_t host_frame_index;
-    int64_t current_block_frame;
-    int64_t host_prior_frame_index;
+    int64_t host_frame;
+    int64_t host_block_frame;
+    int host_audio_buffer_frame;
+    int64_t host_prior_frame;
     juce::AudioBuffer<float> plugin_audio_input_buffer;
-    juce::MidiBuffer midi_input_buffer;
-    juce::MidiBuffer midi_output_buffer;;
-    
+    juce::MidiBuffer plugin_midi_input_buffer;
+    juce::MidiBuffer plugin_midi_output_buffer;;
+
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)
 };

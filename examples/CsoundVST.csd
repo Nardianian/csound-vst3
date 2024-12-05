@@ -1,6 +1,6 @@
 <CsoundSynthesizer>
 <CsOptions>
---midi-key=4 --midi-velocity=5 -d -m160 -+msg_color=0 --daemon
+-M1 --midi-key=4 --midi-velocity=5 -d -m163 -+msg_color=0 --daemon
 </CsOptions>
 <CsLicense>
 
@@ -2089,6 +2089,6 @@ aoutright                       =                       gkMasterLevel * ainright
 
 </CsInstruments>
 <CsScore>
-f 0 3600
+f 0 360000
 </CsScore>
 </CsoundSynthesizer>
