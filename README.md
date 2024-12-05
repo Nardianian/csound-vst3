@@ -15,6 +15,11 @@ GNU Affero General Public License, version 3</a>.
 # CsoundVST3
 [Michael Gogins](https://michaelgogins.tumblr.com)
 
+Note that [Cabbage](https://github.com/rorywalsh/cabbage) provides a much more 
+full-featured VST3 plugin version of Csound. The advantage of CsoundVST3 is 
+that it permits editing .csd text directly within DAW projects. In some cases, 
+this can greatly simplify and speed up the user's workflow.
+
 ## Introduction
 
 CsoundVS3 enables the [Csound audio programming language](https://csound.com/") 

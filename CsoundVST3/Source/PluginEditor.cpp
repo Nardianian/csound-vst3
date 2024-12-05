@@ -41,8 +41,8 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     // Code Editor
     addAndMakeVisible(codeEditor);
     codeEditor.setReadOnly(false);
-    codeEditor.setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkgrey);
-    codeEditor.setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::bisque);
+    codeEditor.setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkslategrey);
+    codeEditor.setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::seashell);
 
     // Message Log
     addAndMakeVisible(messageLog);
