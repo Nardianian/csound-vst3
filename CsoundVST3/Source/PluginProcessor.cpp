@@ -162,8 +162,8 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
             }
         }
     }
+    // Makes sure that messages don't feed back.
     processor->plugin_midi_input_buffer.clear();
-    // DBG("Bytes read: " << bytes_read);
     return bytes_read;
 }
 
@@ -341,7 +341,19 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     csoundMessage(juce::String::formatted("Csound ksmps:           %3d\n", csound_frames));
     csoundIsPlaying = true;
     csoundMessage("Ready to play.\r\n");
-}
+    // TODO: the following is a hack, better try something else.
+    auto host_description = plugin_host_type.getHostDescription();
+    DBG("Host description: " << host_description);
+    if (plugin_host_type.type == juce::PluginHostType::UnknownHost)
+    {
+        suspendProcessing(true);
+    }
+    else
+    {
+        csoundIsPlaying = true;
+        csoundMessage("Ready to play.\r\n");
+    }
+ }
 
 /**
  * Calls csoundPerformKsmps to do the actual processing.

@@ -68,7 +68,8 @@ public:
     bool csoundIsPlaying = false;
     std::function<void(const juce::String&)> messageCallback;
     juce::String csd;
-    
+    juce::PluginHostType plugin_host_type;
+
 private:
     static constexpr double inputScale = 32767.0;
     static constexpr double outputScale = (1.0 / 32767.0);
