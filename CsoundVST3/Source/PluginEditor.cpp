@@ -67,6 +67,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     audioProcessor.addChangeListener(this);
 
     setSize(800, 600);
+    setResizable(true, true);
 }
 
 CsoundVST3AudioProcessorEditor::~CsoundVST3AudioProcessorEditor()

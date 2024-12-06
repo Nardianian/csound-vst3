@@ -426,8 +426,19 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     // gathers the appropriate channel pointers into a channel array for
     // the indicated buffer, but care must be used to respect the outputs
     // overlapping other channels.
+    //
+    // The way Cabbage handles MIDI input seems to use an earlier version of
+    // JUCE. An iterator is created for the host's MIDI buffer at the top of
+    // processBlock. While looping over the host buffer frames, but _after_
+    // csound.PerformKsmps is called, the iterator is tested against the
+    // current host buffer frame, and if the MidiEvent timestamp matches that,
+    // the event is enqueued to the plugin's MIDI input buffer.
+    //
+    // Just as in my code, all events pending in the plugin's MIDI input
+    // buffer are enqueued to csound in the plugin's MIDI read callback.
     plugin_midi_input_buffer.clear();
     int messages = 0;
+#if defined(JUCE_DEBUG)
     for (const auto metadata : host_midi_buffer)
     {
         auto frame_index = metadata.samplePosition;
@@ -435,12 +446,12 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         // In Reaper at least, this is always the same as samplePosition.
         auto timestamp = message.getTimeStamp();
         char buffer[0x200];
-#if defined(JUCE_DEBUG)
         messages++;
         std::snprintf(buffer, sizeof(buffer), "Host  MIDI message %5d: buffer frame:  %7d %s", messages, frame_index, message.getDescription().toUTF8());
         DBG(buffer);
 #endif
     }
+    auto host_midi_buffer_iterator = host_midi_buffer.begin();
     for (host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; )
     {
         csound_frame++;
@@ -456,11 +467,8 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         if (csound_frame >= csound_frames)
         {
             csound_frame = 0;
-            // Add events to the plugin MIDI input buffer _for just Csound's block_ from the host MIDI buffer.
-            plugin_midi_input_buffer.addEvents(host_midi_buffer, host_audio_buffer_frame, host_audio_buffer_frame + csound_frames, 0);
             // DBG(juce::String::formatted("at performKsmps processed: buffer frames: %7d host frames: %7d csound frames: %7d", audio_buffer_frame, host_frame_index, csound_frame_index));
             csound.PerformKsmps();
-            plugin_midi_input_buffer.clear();
         }
         for (channel_index = 0; channel_index < host_output_channels; channel_index++)
         {
@@ -471,6 +479,9 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
                 spout[(csound_frame * csound_output_channels) + channel_index] = double(0);
             }
         }
+        // Add events from the host MIDI input to the plugin's MIDI input buffer
+        //_for just this host buffer sample frame_.
+        plugin_midi_input_buffer.addEvents(host_midi_buffer, host_audio_buffer_frame, 1, 0);
         host_audio_buffer_frame++;
         host_frame++;
     }
