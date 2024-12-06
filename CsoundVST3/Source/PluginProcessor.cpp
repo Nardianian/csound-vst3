@@ -351,6 +351,22 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
  * and may not be the same on every call.
  *
  * Input data in the buffers is replaced by output data, or cleared.
+ 
+ I am going to change the implementation to use FIFOs implemented using AtomicQueue.
+ 
+ In the processBlock calls, the incoming buffers will have their data moved into:
+ plugin_midi_input_queue
+ plugin_audio_input_queue
+ Csound will wait until there is enough data in audio_input_queue to fill spout.
+ Csound will then call performKsmps. This can happen at any time during processBlock.
+ spout will be enqueued to plugin_audio_output.
+ plugin_midi_output will be enqueued to plugin_midi_output.
+ processBlock will then clear host_midi_buffer and push plugin_midi_output into it.
+ processBlock will also dequeue plugin_audio_output into host_audio_buffer.
+ When host_audio_buffer is full, processBlock will return.
+ 
+ 
+ 
  */
 void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audio_buffer, juce::MidiBuffer& host_midi_buffer)
 {
@@ -438,7 +454,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         {
             if (channel_index < csound_output_channels)
             {
-                float sample = float(iodbfs * spout[(csound_frame * host_output_channels) + csound_frame]);
+                float sample = float(iodbfs * spout[(csound_frame * csound_output_channels) + channel_index]);
                 host_audio_output_buffer.setSample(channel_index, host_audio_buffer_frame, sample);
                 spout[(csound_frame * csound_output_channels) + channel_index] = double(0);
             }

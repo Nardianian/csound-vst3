@@ -60,10 +60,12 @@ plugins directory. For example, in macOS, that would normally be the user's
     Csound instrument pfields, and should open MIDI inputs and, if needed, 
     MIDI outputs, like this:
     ```
-    -M1 -Q2 --midi-key=4 --midi-velocity=5 -m163 -+msg_color=0 --daemon  
+    -MN -QN --midi-key=4 --midi-velocity=5 -m163 -+msg_color=0 --daemon  
     ```
-    CsoundVST prints a list of available MIDI devices when it compiles the 
-    .csd.
+    Note that `-MN` must used for MIDI input in a DAW, and that `-QN` must be 
+    used for MIDI output to the DAW. For standalone use, the actual device 
+    number must be used in place of `N`. CsoundVST prints a list of available 
+    MIDI devices when it compiles the .csd.
 
     You should ensure that your Csound orchestra outputs audio samples within 
     the interval [-1, +1]. This can be adjusted by setting 0dbfs in your 
