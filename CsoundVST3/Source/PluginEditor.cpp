@@ -172,19 +172,23 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
     else if (button == &playButton)
     {
         statusBar.setText("Play...", juce::dontSendNotification);
-        ///juce::MessageManagerLock lock;
+        juce::MessageManagerLock lock;
         audioProcessor.play();
+        audioProcessor.suspendProcessing(false);
+        audioProcessor.csoundMessage("Playing...\n");
+        audioProcessor.csoundIsPlaying = true;
     }
     else if (button == &stopButton)
     {
         statusBar.setText("Stop...", juce::dontSendNotification);
-        ///juce::MessageManagerLock lock;
+        juce::MessageManagerLock lock;
         audioProcessor.stop();
     }
     else if (button == &aboutButton)
     {
+        juce::String build_time = juce::String("Build Date: ") + __DATE__ + " Time: " + __TIME__;
         juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, "About CsoundVST",
-                                                              "This is CsoundVST.vst3 by Michael Gogins. It loads Csound .csd files and plays them as VST3 synthesizers or effects. MIDI channel plus 1 is Csound instrument number (p1), MIDI key is pitch (p4), MIDI velocity is loudness (p5). For more help, see:\n\nhttps://github.com/gogins/csound-vst3.");
+                                                              "This is CsoundVST.vst3 by Michael Gogins. It loads Csound .csd files and plays them as VST3 synthesizers or effects. MIDI channel plus 1 is Csound instrument number (p1), MIDI key is pitch (p4), MIDI velocity is loudness (p5). For more help, see:\n\nhttps://github.com/gogins/csound-vst3.\n\n" + build_time);
     }
 
 }

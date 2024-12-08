@@ -141,7 +141,6 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
     auto csound_host_data = csoundGetHostData(csound_);
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     int messages = 0;
-    // Sort here?
     for (const auto metadata : processor->plugin_midi_input_buffer)
     {
         auto data = metadata.data;
@@ -328,7 +327,7 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     host_prior_frame = 0;
     csound_frames = csound.GetKsmps();
     // Vital! Ensures that Csound's block is in sync with the host's block.
-    csound_frame = csound_frames;
+    //csound_frame = csound_frames;
     const int host_input_busses = getBusCount(true);
     const int host_output_busses = getBusCount(false);
     csoundMessage(juce::String::formatted("Host input busses:      %3d\n", host_input_busses));
@@ -339,11 +338,11 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     csoundMessage(juce::String::formatted("Host output channels:   %3d\n", host_output_channels));
     csoundMessage(juce::String::formatted("Host channels:          %3d\n", host_channels));
     csoundMessage(juce::String::formatted("Csound ksmps:           %3d\n", csound_frames));
-    csoundIsPlaying = true;
-    csoundMessage("Ready to play.\r\n");
     // TODO: the following is a hack, better try something else.
     auto host_description = plugin_host_type.getHostDescription();
     DBG("Host description: " << host_description);
+    auto host = juce::String::formatted("Host: %s\n", host_description);
+    csoundMessage(host.toUTF8());
     if (plugin_host_type.type == juce::PluginHostType::UnknownHost)
     {
         suspendProcessing(true);
@@ -351,8 +350,9 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     else
     {
         csoundIsPlaying = true;
-        csoundMessage("Ready to play.\r\n");
-    }
+        suspendProcessing(false);
+   }
+    csoundMessage("Ready to play.\n");
  }
 
 /**
@@ -451,7 +451,6 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         DBG(buffer);
 #endif
     }
-    auto host_midi_buffer_iterator = host_midi_buffer.begin();
     for (host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; )
     {
         csound_frame++;
@@ -464,10 +463,27 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
                 spin[(csound_frame * csound_input_channels) + channel_index] = double(sample);
             }
         }
+        // Enqueue all MIDI input events in the host MIDI buffer that are
+        // pending _within the interval of the Csound block, but not past
+        // the last host buffer frame_, to the plugin's MIDI input buffer.
+        // DBG(juce::String::formatted("at performKsmps processed: buffer frames: %7d host frames: %7d csound frames: %7d", audio_buffer_frame, host_frame_index, csound_frame_index));
+        auto midi_input_iterator = host_midi_buffer.findNextSamplePosition(host_audio_buffer_frame);
+        while (midi_input_iterator != host_midi_buffer.end())
+        {
+            auto metadata = *midi_input_iterator;
+            if (metadata.samplePosition == host_audio_buffer_frame)
+            {
+                plugin_midi_input_buffer.addEvent(metadata.getMessage(), 0);
+            }
+            else if (metadata.samplePosition > host_audio_buffer_frame)
+            {
+                break;
+            }
+            ++midi_input_iterator;
+        }
         if (csound_frame >= csound_frames)
         {
             csound_frame = 0;
-            // DBG(juce::String::formatted("at performKsmps processed: buffer frames: %7d host frames: %7d csound frames: %7d", audio_buffer_frame, host_frame_index, csound_frame_index));
             csound.PerformKsmps();
         }
         for (channel_index = 0; channel_index < host_output_channels; channel_index++)
@@ -479,9 +495,6 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
                 spout[(csound_frame * csound_output_channels) + channel_index] = double(0);
             }
         }
-        // Add events from the host MIDI input to the plugin's MIDI input buffer
-        //_for just this host buffer sample frame_.
-        plugin_midi_input_buffer.addEvents(host_midi_buffer, host_audio_buffer_frame, 1, 0);
         host_audio_buffer_frame++;
         host_frame++;
     }
@@ -491,7 +504,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     {
         plugin_midi_output_buffer.swapWith(host_midi_buffer);
     }
-    plugin_midi_input_buffer.clear();
+    //plugin_midi_input_buffer.clear();
     plugin_midi_output_buffer.clear();
 }
 
