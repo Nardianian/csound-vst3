@@ -10,10 +10,25 @@
 
 #include <JuceHeader.h>
 #include "csound_threaded.hpp"
+#include "atomic_queue/atomic_queue.h"
 
-//==============================================================================
-/**
-*/
+#include <iostream>
+#include <numeric> // For std::accumulate
+
+class AudioFifo : public atomic_queue::AtomicQueue<double, 16384>
+{
+    AudioFifo()
+    {
+    }
+
+    std::atomic<int> producer_frames_to_wait;
+    std::mutex producer_mutex;
+    std::condition_variable producer_condition;
+    std::atomic<int> consumer_frames_to_wait;
+    std::mutex consumer_mutex;
+    std::condition_variable consumer_condition;
+};
+
 class CsoundVST3AudioProcessor  : public juce::AudioProcessor, public juce::ChangeBroadcaster
 {
 public:
@@ -91,7 +106,15 @@ private:
     int64_t host_prior_frame;
     juce::AudioBuffer<float> plugin_audio_input_buffer;
     juce::MidiBuffer plugin_midi_input_buffer;
-    juce::MidiBuffer plugin_midi_output_buffer;;
+    juce::MidiBuffer plugin_midi_output_buffer;
+    
+    // The host pushes its AudioBuffer samples onto this.
+    //AudioFifo audio_input_fifo;
+    // The plugin waits for its input block to fill,
+    // then pushes its output onto this. The host then pops from this until
+    // its AudioBuffer is full of output.
+    //AudioFifo audio_output_fifo;
+    
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)

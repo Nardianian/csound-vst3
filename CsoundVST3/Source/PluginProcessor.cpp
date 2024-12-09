@@ -302,9 +302,9 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     int host_sample_rate = getSampleRate();
     snprintf(buffer, sizeof(buffer), "--sample-rate=%d", host_sample_rate);
     csound.SetOption(buffer);
-    //int host_frames_per_block = getBlockSize();
-    //snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
-    //csound.SetOption(buffer);
+    int host_frames_per_block = getBlockSize();
+    snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
+    csound.SetOption(buffer);
     /// snprintf(buffer, sizeof(buffer), "-+msg_color=0");
     /// csound.SetOption(buffer);
     // If there is a csd, compile it.
@@ -463,6 +463,11 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
                 spin[(csound_frame * csound_input_channels) + channel_index] = double(sample);
             }
         }
+        if (csound_frame >= csound_frames)
+        {
+            csound_frame = 0;
+            csound.PerformKsmps();
+        }
         // Enqueue all MIDI input events in the host MIDI buffer that are
         // pending _within the interval of the Csound block, but not past
         // the last host buffer frame_, to the plugin's MIDI input buffer.
@@ -473,18 +478,13 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             auto metadata = *midi_input_iterator;
             if (metadata.samplePosition == host_audio_buffer_frame)
             {
-                plugin_midi_input_buffer.addEvent(metadata.getMessage(), 0);
+                plugin_midi_input_buffer.addEvent(metadata.getMessage(), host_audio_buffer_frame);
             }
             else if (metadata.samplePosition > host_audio_buffer_frame)
             {
                 break;
             }
             ++midi_input_iterator;
-        }
-        if (csound_frame >= csound_frames)
-        {
-            csound_frame = 0;
-            csound.PerformKsmps();
         }
         for (channel_index = 0; channel_index < host_output_channels; channel_index++)
         {
