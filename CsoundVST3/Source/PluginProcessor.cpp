@@ -184,7 +184,7 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const u
     {
         channel_message.data[i] = midi_buffer[i];
     }
-    processor->midi_output_fifo.push_front(channel_message);
+    processor->midi_output_fifo.push_back(channel_message);
     return result;
 }
 
@@ -248,7 +248,7 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
         pluginEditor->messageLog.loadContent("");
 
     }
-    csoundMessage("Preparing to play...\r\n");
+    csoundMessage("CsoundVST3AudioProcessor::prepareToPlay...\n");
     if (csoundIsPlaying == true)
     {
         csoundIsPlaying = false;
@@ -310,9 +310,9 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     int host_sample_rate = getSampleRate();
     snprintf(buffer, sizeof(buffer), "--sample-rate=%d", host_sample_rate);
     csound.SetOption(buffer);
-    int host_frames_per_block = getBlockSize();
-    snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
-    csound.SetOption(buffer);
+    ///i nt host_frames_per_block = getBlockSize();
+    /// snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
+    /// csound.SetOption(buffer);
     /// snprintf(buffer, sizeof(buffer), "-+msg_color=0");
     /// csound.SetOption(buffer);
     // If there is a csd, compile it.
@@ -325,10 +325,10 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
             csound_frame = 0;
         }
     }
+    odbfs = csound.Get0dBFS();
     iodbfs = 1. / csound.Get0dBFS();
     host_input_channels  = getTotalNumInputChannels();
     host_output_channels = getTotalNumOutputChannels();
-    host_channels = std::max(host_input_channels, host_output_channels);
     csound_input_channels = csound.GetNchnlsInput();
     csound_output_channels = csound.GetNchnls();
     host_frame = 0;
@@ -337,8 +337,6 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     csound_block_begin = 0;
     csound_block_end = csound_block_begin + csound_frames;
     host_block_begin = 0;
-    // Vital! Ensures that Csound's block is in sync with the host's block.
-    //csound_frame = csound_frames;
     const int host_input_busses = getBusCount(true);
     const int host_output_busses = getBusCount(false);
     csoundMessage(juce::String::formatted("Host input busses:      %3d\n", host_input_busses));
@@ -347,8 +345,11 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     csoundMessage(juce::String::formatted("Csound input channels:  %3d\n", csound_input_channels));
     csoundMessage(juce::String::formatted("Csound output channels: %3d\n", csound_output_channels));
     csoundMessage(juce::String::formatted("Host output channels:   %3d\n", host_output_channels));
-    csoundMessage(juce::String::formatted("Host channels:          %3d\n", host_channels));
     csoundMessage(juce::String::formatted("Csound ksmps:           %3d\n", csound_frames));
+    midi_input_fifo.clear();
+    audio_input_fifo.clear();
+    midi_output_fifo.clear();
+    audio_output_fifo.clear();
     // TODO: the following is a hack, better try something else.
     auto host_description = plugin_host_type.getHostDescription();
     DBG("Host description: " << host_description);
@@ -356,14 +357,16 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     csoundMessage(host.toUTF8());
     if (plugin_host_type.type == juce::PluginHostType::UnknownHost)
     {
+        csoundIsPlaying = false;
         suspendProcessing(true);
     }
     else
     {
         csoundIsPlaying = true;
         suspendProcessing(false);
-   }
-    csoundMessage("Ready to play.\n");
+    }
+    plugin_frame = 0;
+    csoundMessage("CsoundVST3AudioProcessor::prepareToPlay: Ready to play.\n");
  }
 
 /**
@@ -371,22 +374,26 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
  *
  * The number of input channels may not equal the number of output channels.
  * The number of frames in the buffer may not be the same as Csound's ksmps,
- * and may not be the same on every call.
+ * and may not be the same on every call. Input data in the host's  buffers is
+ * replaced by output data, or cleared.
  *
- * Input data in the buffers is replaced by output data, or cleared.
- 
- I am going to change the implementation to use FIFOs. For this single-
- threaded use, std::deque is suitablre as peeking is necessary.
- In the processBlock calls, the incoming buffers will have their data moved into:
- plugin_midi_input_queue
- plugin_audio_input_queue
- Csound will wait until there is enough data in audio_input_queue to fill spout.
- Csound will then call performKsmps. This can happen at any time during processBlock.
- spout will be enqueued to plugin_audio_output.
- plugin_midi_output will be enqueued to plugin_midi_output.
- processBlock will then clear host_midi_buffer and push plugin_midi_output into it.
- processBlock will also dequeue plugin_audio_output into host_audio_buffer.
- When host_audio_buffer is full, processBlock will return.
+ * This implementation uses FIFOs based on std::deque, which is suitable
+ * as this implementation is single-threaded so does not need synchronization
+ * bettween threads,  and needs to peek at the front elements of the MIDI
+ * FIFOs.
+ *
+ * In each processBlock call,, the incoming buffers  first have their data
+ * pushed onto midi_input_fifo and audio_input_fifo., after which the host's
+ * MidiBuffer and AudioBuffer are immediately  cleared. Whenever ksmps frames
+ * of audio have been processed, Csound. performKsmps is called, during
+ * which sensEvents calls the plugin's MIDI read callback, in which  MIDI
+ * messages copied to Csound, and the plugin's MIDI write callback, which
+ * pushes  MIDI mrssages from  Csound onto midi_output_fifo. Then, spout
+ * is pushed onto audio_output_fifo. These thiings  can happen at any time,
+ * and any number of times, during the processBlock call.. processBlock then
+ * pops MIDI messages from midi_output_fifo into the hostt's empty
+ * MidiBuffer, and pops audio from audio_output_fifo onto the host's empty
+ * AudioBuffer. When that is full, processBlock returns.,
  */
 void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audio_buffer, juce::MidiBuffer& host_midi_buffer)
 {
@@ -412,9 +419,9 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     auto host_audio_buffer_frames = host_audio_buffer.getNumSamples();
     host_block_begin = host_frame;
     host_block_end = host_block_begin + host_audio_buffer_frames;
-    // Write audio for Csound to process into this buffer.
+    // Audio for Csound to process is written into this buffer.
     auto spin = csound.GetSpin();
-    // Read audio that Csound has processed from this buffer.
+    // Audio that Csound has processed is read from this buffer.
     auto spout = csound.GetSpout();
     if (spout == nullptr)
     {
@@ -428,21 +435,23 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     // The host audio buffer is indexed [channel][frame].
     // As far as I can tell, both `getWritePointer` and `setSample` mark the
     // host audio buffer as not clear, and have the same addresses for the
-    // same elements. The host buffer channel count is the greater of inputs +
-    // side chains and outputs. Input channels are followed by side chain
+    // same elements. The host buffer channel count is the greater of (inputs
+    // + side chains) and outputs. Input channels are followed by side chain
     // channels. Output channels overlap inputs and possibly side chains.
     // (CsoundVST3 does not use side chains.) The getBusBuffer function
     // gathers the appropriate channel pointers into a channel array for
     // the indicated buffer, but care must be used to respect the outputs
     // overlapping other channels.
         
-    // Push all inputs onto FIFOs.
+    // Push all inputs onto FIFOs. Here, frame is the frame of the message
+    // counting from the beginning of performance. Only MIDI channel messages
+    // are handled, although these can of course include PRNs and NPRNs.
     int messages = 0;
     for (const auto metadata : host_midi_buffer)
     {
         auto message = metadata.getMessage();
         auto timestamp = metadata.samplePosition;
-        if (metadata.numBytes <= 4)
+        if (metadata.numBytes <= 3)
         {
             MidiChannelMessage channel_message;
             channel_message.frame = host_block_begin + timestamp;
@@ -451,7 +460,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             {
                 channel_message.data[i] = metadata.data[i];
             }
-            midi_input_fifo.push_front(channel_message);
+            midi_input_fifo.push_back(channel_message);
         }
         char buffer[0x200];
         messages++;
@@ -466,43 +475,45 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         for (int host_audio_buffer_channel = 0; host_audio_buffer_channel < host_input_channels; ++host_audio_buffer_channel)
         {
             auto sample = host_audio_buffer.getSample(host_audio_buffer_channel, host_audio_buffer_frame);
-            audio_input_fifo.push_front(sample);
+            audio_input_fifo.push_back(sample);
         }
     }
     host_audio_buffer.clear();
     // FIFOs being loaded, now process.
     // The host block pops audio input...
-    for (host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; )
+    for (host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; ++host_audio_buffer_frame, ++plugin_frame)
     {
         int channel_index;
         for (channel_index = 0; channel_index < host_input_channels; channel_index++)
         {
-            float sample = float(iodbfs * audio_input_fifo.back());
+            float sample = float(odbfs * audio_input_fifo.front());
             {
                 spin[(csound_frame * csound_input_channels) + channel_index] = double(sample);
             }
-            audio_input_fifo.pop_back();
+            audio_input_fifo.pop_front();
         }
-        csound_frame++;
         // ...until spin is full...
-        if (csound_frame >= csound_frames)
+        if ((plugin_frame % csound_frames) == 0)
         {
-            csound_frame = 0;
-            csound.PerformKsmps();
-            // ...then the Csound block pushes audio output.
+            // Process the Csound block for ksmps frames...
+            auto result = csound.PerformKsmps();
+            // ...then push Csound's audio output.
             // Thus the host block and the Csound block need not be the same
             // size, and the FIFOs keep samples aligned.
-            for (int csound_frame = 0; csound_frame < csound_frames; ++csound_frame)
+            for (int csound_block_frame = 0; csound_block_frame < csound_frames; ++csound_block_frame)
             {
                 for (int csound_output_channel = 0; csound_output_channel < csound_output_channels; ++csound_output_channel)
                 {
-                    auto sample = spout[(csound_frame * csound_output_channels) + csound_output_channel];
-                    audio_output_fifo.push_front(sample);
+                    auto sample = spout[(csound_block_frame * csound_output_channels) + csound_output_channel];
+                    audio_output_fifo.push_back(sample);
                 }
+            }
+            if (result != 0) {
+                csoundIsPlaying = false;
             }
         }
     }
-    // Processing the host block being completed,
+    // Processing of the host block being completed,
     // now pop from the output FIFOs until JUCE outputs are full.
     while (true)
     {
@@ -510,11 +521,11 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         {
             break;
         }
-        auto message = midi_output_fifo.back();
+        auto message = midi_output_fifo.front();
         if (message.frame >= host_block_begin)
         {
             host_midi_buffer.addEvent(message.data, message.size, int(message.frame - host_block_begin));
-            midi_output_fifo.pop_back();
+            midi_output_fifo.pop_front();
         }
         else
         {
@@ -525,9 +536,9 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     {
         for (int host_output_channel = 0; host_output_channel < host_output_channels; ++host_output_channel)
         {
-            auto sample = audio_output_fifo.back();
-            audio_output_fifo.pop_back();
-            host_audio_buffer.setSample(host_audio_buffer_frame, host_output_channel, sample);
+            auto sample = iodbfs * audio_output_fifo.front();
+            audio_output_fifo.pop_front();
+            host_audio_buffer.setSample(host_output_channel, host_audio_buffer_frame, sample);
         }
     }
 }
@@ -576,12 +587,12 @@ juce::AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 
 void CsoundVST3AudioProcessor::play()
 {
+    stop();
+    suspendProcessing(false);
     auto frames_per_second = getSampleRate();
     auto frame_size = getBlockSize();
-    suspendProcessing(true);
     prepareToPlay(frames_per_second, frame_size);
-    suspendProcessing(false);
-}
+ }
 
 void CsoundVST3AudioProcessor::stop()
 {

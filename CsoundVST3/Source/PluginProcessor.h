@@ -79,8 +79,7 @@ public:
     juce::PluginHostType plugin_host_type;
 
 private:
-    static constexpr double inputScale = 32767.0;
-    static constexpr double outputScale = (1.0 / 32767.0);
+    double odbfs;
     double iodbfs;
     
     int host_input_channels;
@@ -97,6 +96,8 @@ private:
     int64_t host_block_frame;
     int64_t host_audio_buffer_frame;
     int64_t host_prior_frame;
+    // Set to 0 in prepareToPlay, incremented in processBlock.
+    int64_t plugin_frame;
     
     // These are counting in sample frames from the beginning of the
     // performance.
@@ -106,8 +107,7 @@ private:
     int64_t host_block_end;
     
     // Intermediate FIFOs simplify keeping track of overlapping or incomplete 
-    // blocks. For simply pushing and popping, AtomicQueue is faster than
-    // std::deque.
+    // blocks.
     std::deque<MidiChannelMessage> midi_input_fifo;
     std::deque<double> audio_input_fifo;
     std::deque<MidiChannelMessage> midi_output_fifo;

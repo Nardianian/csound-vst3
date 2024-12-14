@@ -1,6 +1,5 @@
 <CsoundSynthesizer>
 <CsOptions>
--d -R -W -Z -f --sample-accurate -oxanadu-high-resolution.wav
 </CsOptions>
 <CsInstruments>
 sr          =           192000
