@@ -159,8 +159,10 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
             {
 #if defined(JUCE_DEBUG)
                 ///assert(message.plugin_frame >= processor->csound_block_begin && message.plugin_frame < processor->csound_block_end);
+                auto tyme = message.plugin_frame / float(processor->getSampleRate());
+
                 std::snprintf(buffer, sizeof(buffer),
-                              "Plugin midiRead   #%5d: cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end  %8llu  %s", message.sequence, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
+                              "Plugin midiRead   #%5lld: time:%9.4f cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end  %8llu  %s", message.sequence, tyme, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
                 DBG(buffer);
 #endif
                 for (int i = 0; i < size; ++i, ++bytes_read)
@@ -180,7 +182,7 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
         {
 #if defined(JUCE_DEBUG)
             std::snprintf(buffer, sizeof(buffer),
-                          " > end midiRead   #%5d: cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end%8llu  %s", message.sequence, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
+                          " > end midiRead   #%5lld: cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end%8llu  %s", message.sequence, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
             ///DBG(buffer);
 #endif
             return bytes_read;
@@ -467,11 +469,11 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         auto message = metadata.getMessage();
         // This timestamp comes from JUCE and the host,
         // and is relative to the host block.
-        auto timestamp = metadata.samplePosition;
+        /// auto timestamp = metadata.samplePosition;
         MidiChannelMessage channel_message;
         channel_message.sequence = midi_input_sequence++;
         channel_message.message = message;
-        channel_message.message.setTimeStamp(timestamp);
+        /// channel_message.message.setTimeStamp(timestamp);
         channel_message.plugin_frame = host_block_begin + metadata.samplePosition;
         channel_message.csound_frame = channel_message.plugin_frame % csound_frames;
         
@@ -483,9 +485,10 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             input_messages++;
             char buffer[0x200];
             // The channel message frame must be in [host_block_begin, host_block_end).
+            auto tyme = plugin_frame / float(csound.GetSr());
             assert(channel_message.plugin_frame >= host_block_begin && channel_message.plugin_frame < host_block_end);
             std::snprintf(buffer, sizeof(buffer),
-                          "Host processBlock #%5lld: host begin%8llu plugin%8llu msg%8llu cs%8llu host end%8llu  %s", channel_message.sequence, host_block_begin, plugin_frame, channel_message.plugin_frame, channel_message.csound_frame, host_block_end, message.getDescription().toRawUTF8());
+                          "Host processBlock #%5lld: time:%9.4f host begin%8llu plugin%8llu msg%8llu cs%8llu host end%8llu  %s", channel_message.sequence, tyme, host_block_begin, plugin_frame, channel_message.plugin_frame, channel_message.csound_frame, host_block_end, message.getDescription().toRawUTF8());
             DBG(buffer);
 #endif
         }
