@@ -17,9 +17,21 @@
 class MidiChannelMessage
 {
 public:
-    int64_t frame = 0;
-    int size = 0;
-    uint8_t data[4];
+    /**
+     * This is the frame counting from the beginning of the plugin's
+     * performance, which is used to find whether this essage falls within the
+     * current Csound block and should be handled in the MIDI read callback.
+     */
+    int64_t plugin_frame = 0;
+    /**
+     * This is a sanity check on position in the spout buffer.
+     */
+    int64_t csound_frame = 0;
+    /**
+     * Another sanity check to see if we are missing or duplicating mesaages.
+     */
+    int64_t sequence = 0;
+    juce::MidiMessage message;
 };
 
 class CsoundVST3AudioProcessor : public juce::AudioProcessor, public juce::ChangeBroadcaster
@@ -108,6 +120,7 @@ private:
     
     // Intermediate FIFOs simplify keeping track of overlapping or incomplete 
     // blocks.
+    int64_t midi_input_sequence;
     std::deque<MidiChannelMessage> midi_input_fifo;
     std::deque<double> audio_input_fifo;
     std::deque<MidiChannelMessage> midi_output_fifo;
