@@ -202,7 +202,8 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const u
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     MidiChannelMessage channel_message;
     channel_message.plugin_frame = processor->plugin_frame;
-    channel_message.message = juce::MidiMessage(midi_buffer, midi_buffer_size, processor->host_audio_buffer_frame);
+    ///channel_message.csound_frame = processor->csound_block_begin + processor->csound_frame;
+    channel_message.message = juce::MidiMessage(midi_buffer, midi_buffer_size, 0);
     processor->midi_output_fifo.push_back(channel_message);
     return result;
 }
@@ -556,7 +557,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             // Log location, plugin frame, host begin, timestamp, host end, csound
             // begin, csound frame, csound end.
             std::snprintf(buffer, sizeof(buffer),
-            "Host out#%5d: frame%8llu timestamp%8llu csound: begin%8llu frame %8llu %8llu end%8llu %s", output_messages, plugin_frame, timestamp, csound_block_begin, plugin_frame, csound_frame, csound_block_end, message.message.getDescription().toRawUTF8());
+            "MIDI output to host#%5d: frame%8llu timestamp%8llu csound: begin%8llu frame %8llu %8llu end%8llu %s", output_messages, plugin_frame, timestamp, csound_block_begin, plugin_frame, csound_frame, csound_block_end, message.message.getDescription().toRawUTF8());
             DBG(buffer);
 #endif
         }
@@ -565,15 +566,20 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             break;
         }
     }
-    for (int host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; ++host_audio_buffer_frame)
-    {
-        for (int host_output_channel = 0; host_output_channel < host_output_channels; ++host_output_channel)
+        for (int host_audio_buffer_frame = 0; host_audio_buffer_frame < host_audio_buffer_frames; ++host_audio_buffer_frame)
         {
-            auto sample = iodbfs * audio_output_fifo.front();
-            audio_output_fifo.pop_front();
-            host_audio_buffer.setSample(host_output_channel, host_audio_buffer_frame, sample);
+            for (int host_output_channel = 0; host_output_channel < host_output_channels; ++host_output_channel)
+            {
+                // TODO: This is a hack.
+                float sample = 0;
+                if (audio_output_fifo.empty() == false)
+                {
+                    sample = audio_output_fifo.front();
+                    audio_output_fifo.pop_front();
+                }
+                host_audio_buffer.setSample(host_output_channel, host_audio_buffer_frame, sample);
+            }
         }
-    }
 }
 
 //==============================================================================

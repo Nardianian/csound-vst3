@@ -55,10 +55,10 @@ plugins directory. For example, in macOS, that would normally be the user's
 ## Usage
 
  1. Write a Csound .csd file that optionally outputs stereo audio, optionally 
-    accepts stereo audio input, and optionally accepts MIDI channel messages. 
-    The `<CsOptions>` element should map MIDI channel message fields to your 
-    Csound instrument pfields, and should open MIDI inputs and, if needed, 
-    MIDI outputs, like this:
+    accepts stereo audio input, optionally accepts MIDI channel messages, and 
+    optionally sends out MIDI channel messages. The `<CsOptions>` element 
+    should map MIDI channel message fields to your Csound instrument pfields, 
+    and should open MIDI inputs and, if needed, MIDI outputs, like this:
     ```
     -MN -QN --midi-key=4 --midi-velocity=5 -m163 -+msg_color=0 --daemon  
     ```
@@ -67,9 +67,22 @@ plugins directory. For example, in macOS, that would normally be the user's
     number must be used in place of `N`. CsoundVST prints a list of available 
     MIDI devices when it compiles the .csd.
 
+    Your Csound instrument definitions may use mapped pfields and/or Csound's 
+    MIDI input and output opcodes but, in any case, you must use a releasing 
+    envelope. It is possible, but tricky, to use the same instrument 
+    definitions for both MIDI performance and score-driven performance; but 
+    in that case, you must not change the value of p3 to extend note durations, 
+    rather, use the xtratim opcode for that purpose. Both when a Csound score 
+    event with a positive p3 ends, and when a MIDI note with a negative p3 
+    receives its MIDI note off message, the releasing envelope will be 
+    triggered and will properly end the note.
+
     You should ensure that your Csound orchestra outputs audio samples within 
-    the interval [-1, +1]. This can be adjusted by setting 0dbfs in your 
+    the interval [-1, +1]. This can be controlled by adjusting 0dbfs in your 
     orchestra header.
+
+    The examples/CsoudVST3.csd file contains numerous instrument definitions 
+    that work this way.
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
 
