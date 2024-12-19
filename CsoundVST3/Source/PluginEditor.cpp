@@ -90,11 +90,11 @@ void CsoundVST3AudioProcessorEditor::resized()
     openButton.setBounds(menuBar.removeFromLeft(80));
     openButton.setTooltip("Open a .csd file");
     saveButton.setBounds(menuBar.removeFromLeft(80));
-    saveButton.setTooltip("Save edited text to the plugin state");
+    saveButton.setTooltip("Save edited .csd to the plugin state");
     saveAsButton.setBounds(menuBar.removeFromLeft(100));
-    saveAsButton.setTooltip("Save edited text to a .csd file");
+    saveAsButton.setTooltip("Save edited .csd to a .csd file");
     playButton.setBounds(menuBar.removeFromLeft(80));
-    playButton.setTooltip("Stop Csound and recompile the .csd");
+    playButton.setTooltip("Stop Csound, compile the .csd, and start the performance");
     stopButton.setBounds(menuBar.removeFromLeft(80));
     stopButton.setTooltip("Stop the Csound performance");
     aboutButton.setBounds(menuBar.removeFromLeft(100));

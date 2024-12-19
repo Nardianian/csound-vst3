@@ -3,7 +3,8 @@
 This is an extremely basic proof that CsoundVST3 can use Csound's MIDI output 
 opcodes to send MIDI output to any MIDI input. This has been tested by using 
 the standalone app version of CsoundVST3 to send MIDI channel messages to the 
-MidiView program on macOS. The code is adapted from an example by Ian McCurdy.
+MidiView program on macOS. The code is adapted from an example by Iain 
+McCurdy.
 </CsLicense>
 <CsOptions>
 -Q1 -m163 -daemon
