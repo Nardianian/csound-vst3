@@ -234,6 +234,7 @@
 		355E552F2D180B9300C766F8 /* debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = debug.entitlements; sourceTree = "<group>"; };
 		3585DC962D14AA9300EEB243 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../Resources/README.md; sourceTree = "<group>"; };
 		3585DC972D14AA9300EEB243 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = ../../Resources/LICENSE; sourceTree = "<group>"; };
+		35B2C5112D18494B00F0D62E /* AboutDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AboutDialog.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/AboutDialog.h"; sourceTree = "<absolute>"; };
 		37A573A6007B8058CE53AAB6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38EA8921B126358B8821C4B1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		3A9326F73BE65FABFC828D60 /* Info-AU.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-AU.plist"; sourceTree = SOURCE_ROOT; };
@@ -396,6 +397,7 @@
 		20380E1C0E98F7331B4FC17C /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				35B2C5112D18494B00F0D62E /* AboutDialog.h */,
 				1D79C73DD5938FEB74A2E509 /* PluginProcessor.cpp */,
 				7578537DDFC30885A6B2C4D9 /* PluginProcessor.h */,
 				B8BAC5852B345AB1D95DE8D3 /* PluginEditor.cpp */,

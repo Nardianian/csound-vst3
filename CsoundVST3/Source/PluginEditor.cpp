@@ -8,6 +8,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "AboutDialog.h"
 #include "csound_threaded.hpp"
 
 
@@ -84,7 +85,6 @@ void CsoundVST3AudioProcessorEditor::paint (juce::Graphics& g)
 void CsoundVST3AudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
-
     // Menu Bar
     auto menuBar = bounds.removeFromTop(30);
     openButton.setBounds(menuBar.removeFromLeft(80));
@@ -186,9 +186,12 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &aboutButton)
     {
-        juce::String build_time = juce::String("Build Date: ") + __DATE__ + " Time: " + __TIME__;
+        /*
+         juce::String build_time = juce::String("Build Date: ") + __DATE__ + " Time: " + __TIME__;
         juce::AlertWindow::showMessageBoxAsync(juce::AlertWindow::InfoIcon, "About CsoundVST",
                                                               "This is CsoundVST.vst3 by Michael Gogins. It loads Csound .csd files and plays them as VST3 synthesizers or effects. MIDI channel plus 1 is Csound instrument number (p1), MIDI key is pitch (p4), MIDI velocity is loudness (p5). For more help, see:\n\nhttps://github.com/gogins/csound-vst3.\n\n" + build_time);
+         */
+        showAboutDialog(this);
     }
 
 }

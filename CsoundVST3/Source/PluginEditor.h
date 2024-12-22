@@ -14,7 +14,7 @@
 class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor,
 public juce::Button::Listener,
 public juce::ChangeListener
-//public juce::TooltipWindow
+// public juce::TooltipWindow
 {
 public:
     CsoundVST3AudioProcessorEditor (CsoundVST3AudioProcessor&);
@@ -30,7 +30,7 @@ private:
     juce::CodeDocument csd_document;
     juce::CodeDocument messages_document;
 
-    juce::TextButton openButton{"Load..."};
+    juce::TextButton openButton{"Open..."};
     juce::TextButton saveButton{"Save"};
     juce::TextButton saveAsButton{"Save as..."};
     juce::TextButton playButton{"Play"};
@@ -40,16 +40,19 @@ private:
     juce::Label statusBar;
     juce::StretchableLayoutManager verticalLayout;
     juce::StretchableLayoutResizerBar divider;
+    
 public:
     juce::CodeEditorComponent codeEditor;
     juce::CodeEditorComponent messageLog;
 
 private:
     void buttonClicked(juce::Button* button) override;
+    
+
     juce::TooltipWindow tooltipWindow { this }; // Enable tooltips
 
     std::unique_ptr<juce::FileChooser> fileChooser;
     juce::File csd_file;
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessorEditor)
 };
