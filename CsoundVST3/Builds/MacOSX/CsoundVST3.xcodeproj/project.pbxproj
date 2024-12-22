@@ -57,6 +57,9 @@
 		351D11D52D155AA7006A122C /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 351D11C32D155AA7006A122C /* LICENSE */; };
 		351D11D62D155AA7006A122C /* CsoundVST3AudioIn.csd in Resources */ = {isa = PBXBuildFile; fileRef = 351D11BF2D155AA7006A122C /* CsoundVST3AudioIn.csd */; };
 		351D11D72D155AA7006A122C /* CsoundVST3.csd in Resources */ = {isa = PBXBuildFile; fileRef = 351D11BE2D155AA7006A122C /* CsoundVST3.csd */; };
+		355E552C2D16CA4800C766F8 /* angel_concert 2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 355E552B2D16CA4800C766F8 /* angel_concert 2.icns */; };
+		355E552D2D16CA4800C766F8 /* angel_concert 2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 355E552B2D16CA4800C766F8 /* angel_concert 2.icns */; };
+		355E552E2D16CA4800C766F8 /* angel_concert 2.icns in Resources */ = {isa = PBXBuildFile; fileRef = 355E552B2D16CA4800C766F8 /* angel_concert 2.icns */; };
 		3585DC5D2D14A96500EEB243 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 32F817BB47D48FE96278F849 /* Accelerate.framework */; };
 		3585DC5E2D14A96500EEB243 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 04EDF0F0E26344FD66F6A680 /* AudioToolbox.framework */; };
 		3585DC5F2D14A96500EEB243 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37A573A6007B8058CE53AAB6 /* Cocoa.framework */; };
@@ -227,6 +230,8 @@
 		351D11C12D155AA7006A122C /* Xanadu.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = Xanadu.csd; sourceTree = "<group>"; };
 		351D11C32D155AA7006A122C /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; path = LICENSE; sourceTree = "<group>"; };
 		351D11C42D155AA7006A122C /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		355E552B2D16CA4800C766F8 /* angel_concert 2.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = "angel_concert 2.icns"; sourceTree = "<group>"; };
+		355E552F2D180B9300C766F8 /* debug.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = debug.entitlements; sourceTree = "<group>"; };
 		3585DC962D14AA9300EEB243 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = ../../Resources/README.md; sourceTree = "<group>"; };
 		3585DC972D14AA9300EEB243 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = ../../Resources/LICENSE; sourceTree = "<group>"; };
 		37A573A6007B8058CE53AAB6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
@@ -447,6 +452,7 @@
 		351D11C52D155AA7006A122C /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				355E552B2D16CA4800C766F8 /* angel_concert 2.icns */,
 				351D11C22D155AA7006A122C /* Examples */,
 				351D11C32D155AA7006A122C /* LICENSE */,
 				351D11C42D155AA7006A122C /* README.md */,
@@ -485,6 +491,7 @@
 		85F3F21AE8D7F53EF1359B2A /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				355E552F2D180B9300C766F8 /* debug.entitlements */,
 				351D11C52D155AA7006A122C /* Resources */,
 				8C2FECF76346E8C1451EE53B /* CsoundVST3 */,
 				61E6F90371550D473904A29D /* JUCE Modules */,
@@ -815,6 +822,7 @@
 				351D11CD2D155AA7006A122C /* CsoundVST3MidiOut.csd in Resources */,
 				351D11CE2D155AA7006A122C /* README.md in Resources */,
 				351D11CF2D155AA7006A122C /* LICENSE in Resources */,
+				355E552C2D16CA4800C766F8 /* angel_concert 2.icns in Resources */,
 				351D11D02D155AA7006A122C /* CsoundVST3AudioIn.csd in Resources */,
 				351D11D12D155AA7006A122C /* CsoundVST3.csd in Resources */,
 			);
@@ -829,6 +837,7 @@
 				351D11D32D155AA7006A122C /* CsoundVST3MidiOut.csd in Resources */,
 				351D11D42D155AA7006A122C /* README.md in Resources */,
 				351D11D52D155AA7006A122C /* LICENSE in Resources */,
+				355E552E2D16CA4800C766F8 /* angel_concert 2.icns in Resources */,
 				351D11D62D155AA7006A122C /* CsoundVST3AudioIn.csd in Resources */,
 				351D11D72D155AA7006A122C /* CsoundVST3.csd in Resources */,
 			);
@@ -843,6 +852,7 @@
 				351D11C72D155AA7006A122C /* CsoundVST3MidiOut.csd in Resources */,
 				351D11C82D155AA7006A122C /* README.md in Resources */,
 				351D11C92D155AA7006A122C /* LICENSE in Resources */,
+				355E552D2D16CA4800C766F8 /* angel_concert 2.icns in Resources */,
 				351D11CA2D155AA7006A122C /* CsoundVST3AudioIn.csd in Resources */,
 				351D11CB2D155AA7006A122C /* CsoundVST3.csd in Resources */,
 			);
@@ -1003,9 +1013,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1100,6 +1112,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-AU.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_STYLE = Bundle;
@@ -1125,10 +1138,13 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1223,6 +1239,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-VST3.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/VST3/";
 				LIBRARY_STYLE = Bundle;
@@ -1249,6 +1266,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1342,6 +1360,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-VST3_Manifest_Helper.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
@@ -1363,6 +1382,7 @@
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1456,6 +1476,7 @@
 					"$(HOME)/JUCE/modules/juce_audio_plugin_client/AU",
 					"$(inherited)",
 				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(HOME)/JUCE/modules/juce_audio_plugin_client/AU";
@@ -1471,6 +1492,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = macosx;
 			};
@@ -1482,10 +1505,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1580,6 +1605,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-AU.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/Components/";
 				LIBRARY_STYLE = Bundle;
@@ -1604,10 +1630,16 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 9UX792D3V9;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1701,12 +1733,14 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-Standalone_Plugin.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(HOME)/JUCE/modules/juce_audio_plugin_client/AU";
 				OTHER_LDFLAGS = "-lCsoundVST3";
 				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3;
 				PRODUCT_NAME = CsoundVST3;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				USE_HEADERMAP = NO;
 				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
 			};
@@ -1735,8 +1769,10 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9UX792D3V9;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -1755,10 +1791,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				PRODUCT_NAME = CsoundVST3;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};
@@ -1768,6 +1806,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				SDKROOT = macosx;
 			};
@@ -1783,6 +1823,7 @@
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1876,6 +1917,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-VST3_Manifest_Helper.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
 				MTL_HEADER_SEARCH_PATHS = "$(HOME)/JUCE/modules/juce_audio_processors/format_types/VST3_SDK $(SRCROOT)/../../JuceLibraryCode $(HOME)/JUCE/modules $(HOME)/JUCE/modules/juce_audio_plugin_client/AU";
@@ -1892,9 +1934,15 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = 9UX792D3V9;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1988,6 +2036,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-Standalone_Plugin.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
@@ -1995,6 +2044,7 @@
 				OTHER_LDFLAGS = "-lCsoundVST3";
 				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3;
 				PRODUCT_NAME = CsoundVST3;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				USE_HEADERMAP = NO;
 				VALID_ARCHS = "i386 x86_64 arm64 arm64e";
 			};
@@ -2009,6 +2059,7 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -2102,6 +2153,7 @@
 					"$(HOME)/JUCE/modules/juce_audio_plugin_client/AU",
 					"$(inherited)",
 				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INSTALL_PATH = "@executable_path/../Frameworks";
 				LLVM_LTO = YES;
 				MACOSX_DEPLOYMENT_TARGET = 11.0;
@@ -2120,9 +2172,13 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				DEAD_CODE_STRIPPING = YES;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -2217,6 +2273,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = "Info-VST3.plist";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.music";
 				INFOPLIST_PREPROCESS = NO;
 				INSTALL_PATH = "$(HOME)/Library/Audio/Plug-Ins/VST3/";
 				LIBRARY_STYLE = Bundle;
@@ -2258,8 +2315,10 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = 9UX792D3V9;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = NO;
 				ENABLE_USER_SCRIPT_SANDBOXING = YES;
@@ -2278,9 +2337,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_CODE_SIGN_FLAGS = "--timestamp";
 				PRODUCT_NAME = CsoundVST3;
 				SDKROOT = macosx;
+				STRIP_INSTALLED_PRODUCT = NO;
 				WARNING_CFLAGS = "-Wreorder";
 				ZERO_LINK = NO;
 			};

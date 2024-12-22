@@ -16,15 +16,15 @@ GNU Affero General Public License, version 3</a>.
 [Michael Gogins](https://michaelgogins.tumblr.com)
 
 Note that [Cabbage](https://github.com/rorywalsh/cabbage) provides a much more 
-full-featured VST3 plugin version of Csound. The advantage of CsoundVST3 is 
-that it permits editing .csd text directly within DAW projects. In some cases, 
-this can greatly simplify and speed up the user's workflow.
+full-featured VST3 plugin version of Csound. However, CsoundVST3 enables 
+editing .csd text directly within DAW projects. In some cases, this can greatly 
+simplify and speed up the user's workflow.
 
 ## Introduction
 
 CsoundVS3 enables the [Csound audio programming language](https://csound.com/") 
-to be used within digital audio workstations as a VST3 plugin instrument. The 
-plugin can also be used as a signal processing effect.
+to be used within digital audio workstations as a VST3 plugin instrument and 
+signal processing effect.
 
 CsoundVST3 has audio inputs, audio outputs, MIDI inputs, and MIDI outputs. 
 The plugin hosts one .csd file, which can be edited from the plugin's user 
@@ -37,9 +37,7 @@ commands.
 
 CsoundVST3's GUI does _not_ provide user-defined widgets for controlling the 
 Csound orchestra. However, such controls can be implemented in the DAW using 
-MIDI control change messages, or through Csound's network interfaces. All MIDI 
-control change messages are automatically mapped to Csound k-rate control 
-channels, using a naming convention.
+MIDI control change messages.
 
 Please log any bug reports or feature requests as a GitHub issue.
 
@@ -48,8 +46,8 @@ Please log any bug reports or feature requests as a GitHub issue.
 Download the installation archive from 
 <a href="https://github.com/gogins/csound-vst3">GitHub<a/> and unzip it.
 
-Copy the CsoundVST3.vst3 directory and its contents to your computer's VST3 
-plugins directory. For example, in macOS, that would normally be the user's 
+Copy the CsoundVST3.vst3 directory and its contents to your user VST3 plugins 
+directory. For example, in macOS, that would normally end up as 
 `~/Library/Audio/Plug-Ins/VST3/CsoundVST3.vst3`.
 
 ## Usage
@@ -57,31 +55,34 @@ plugins directory. For example, in macOS, that would normally be the user's
  1. Write a Csound .csd file that optionally outputs stereo audio, optionally 
     accepts stereo audio input, optionally accepts MIDI channel messages, and 
     optionally sends out MIDI channel messages. The `<CsOptions>` element 
-    should map MIDI channel message fields to your Csound instrument pfields, 
-    and should open MIDI inputs and, if needed, MIDI outputs, like this:
+    can map MIDI channel message fields to your Csound instrument pfields, 
+    and should open MIDI inputs and, if needed, MIDI outputs, for example:
     ```
     -MN -QN --midi-key=4 --midi-velocity=5 -m163 -+msg_color=0 --daemon  
     ```
     Note that `-MN` must used for MIDI input in a DAW, and that `-QN` must be 
     used for MIDI output to the DAW. For standalone use, the actual device 
-    number must be used in place of `N`. CsoundVST prints a list of available 
+    number must be used in place of `N`. CsoundVST3 prints a list of available 
     MIDI devices when it compiles the .csd.
+    
+    The `--daemon` option ensures that the Csound orchestra will run 
+    indefinitely within the DAW project.
 
     Your Csound instrument definitions may use mapped pfields and/or Csound's 
     MIDI input and output opcodes but, in any case, you must use a releasing 
     envelope. It is possible, but tricky, to use the same instrument 
     definitions for both MIDI performance and score-driven performance; but 
     in that case, you must not change the value of p3 to extend note durations, 
-    rather, use the xtratim opcode for that purpose. Both when a Csound score 
-    event with a positive p3 ends, and when a MIDI note with a negative p3 
-    receives its MIDI note off message, the releasing envelope will be 
+    rather, use the `xtratim` opcode for that purpose. Both when a Csound 
+    score event with a positive p3 ends, and when a MIDI note with a negative 
+    p3 receives its MIDI note off message, the releasing envelope will be 
     triggered and will properly end the note.
 
     You should ensure that your Csound orchestra outputs audio samples within 
-    the interval [-1, +1]. This can be controlled by adjusting 0dbfs in your 
+    the interval [-1, +1]. This can be controlled by adjusting `0dbfs` in your 
     orchestra header.
 
-    The examples/CsoudVST3.csd file contains numerous instrument definitions 
+    The CsoundVST3.csd example contains numerous instrument definitions 
     that work this way.
 
  2. In your DAW, create a new track using CsoundVST3 as a virtual instrument.
