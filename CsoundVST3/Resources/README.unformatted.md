@@ -1,18 +1,16 @@
+CsoundVST3
+
+By Michael Gogins
+
+https://michaelgogins.tumblr.com
+
 All music and examples herein are licensed under the Creative Commons 
 Attribution-NonCommercial-ShareAlike 4.0 International License at 
 http://creativecommons.org/licenses/by-nc-sa/4.0/.
 
-<p>
-<img alt="GNU Affero General License v3" 
-style="border-width:0" src="https://www.gnu.org/graphics/agplv3-155x51.png" /> 
-</p><p>
 All code herein is licensed under the GNU Affero General Public License, 
 version 3 at https://www.gnu.org/licenses/agpl-3.0.html.
     
-CsoundVST3
-By Michael Gogins
-https://michaelgogins.tumblr.com
-
 Note that Cabbage at https://github.com/rorywalsh/cabbage provides a much more 
 full-featured VST3 plugin version of Csound. However, CsoundVST3 enables 
 editing .csd text directly within DAW projects. In some cases, this can greatly 
