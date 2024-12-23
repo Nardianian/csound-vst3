@@ -8,70 +8,53 @@ class AboutDialog : public juce::Component
 public:
     AboutDialog()
     {
+        // Load the image from BinaryData
+        auto imageInputStream = std::make_unique<juce::MemoryInputStream>(BinaryData::angel_concert_png, BinaryData::angel_concert_pngSize, false);
+        auto loadedImage = juce::ImageFileFormat::loadFrom(*imageInputStream);
+
+        if (loadedImage.isValid())
+        {
+            appIconComponent.setImage(loadedImage);
+            ///appIconComponent.setBounds(0, 0, 200, 200); // Set initial size
+            addAndMakeVisible(appIconComponent);
+        }
         // Set up app information label
         juce::String build_time = juce::String("Build Date: ") + __DATE__ + " Time: " + __TIME__;
         appInfoLabel.setText("This is CsoundVST3\nVersion 1.0\n" + build_time + "\n(c) 2024 Irreducible Productions", juce::dontSendNotification);
-        auto readmeContent = "readme content"; //juce::String(BinaryData::README_md, BinaryData::README_mdSize);
+        auto readmeContent = juce::String(BinaryData::README_md, BinaryData::README_mdSize);
 
         appInfoLabel.setJustificationType(juce::Justification::topLeft);
         appInfoLabel.setFont(juce::Font(16.0f));
         appInfoLabel.setBorderSize(juce::BorderSize<int>(15));
         addAndMakeVisible(appInfoLabel);
-
-        // Load icon image
-        auto imagePath = juce::File::getCurrentWorkingDirectory().getChildFile("icon.png");
-        appIcon = juce::ImageFileFormat::loadFrom(imagePath);
-        if (appIcon.isValid())
-        {
-            appIconComponent.setImage(appIcon);
-            appIconComponent.setBounds(0, 0, 100, 100); // Set initial size
-            addAndMakeVisible(appIconComponent);
-        }
-
-        // Load README.md text
-        auto readmePath = juce::File::getCurrentWorkingDirectory().getChildFile("README.md");
-        if (readmePath.existsAsFile())
-        {
-            juce::FileInputStream stream(readmePath);
-            if (stream.openedOk())
-            {
-                readmeText = stream.readEntireStreamAsString();
-                readmeLabel.setText(readmeText, juce::dontSendNotification);
-                readmeLabel.setFont(juce::Font(14.0f));
-                readmeLabel.setJustificationType(juce::Justification::topLeft);
-                readmeLabel.setColour(juce::Label::backgroundColourId, juce::Colours::lightgrey);
-                readmeLabel.setColour(juce::Label::textColourId, juce::Colours::black);
-                readmeLabel.setSize(400, 200); // Adjust based on expected README size
-                readmeLabel.setBorderSize(juce::BorderSize<int>(5));
-                addAndMakeVisible(readmeLabel);
-            }
-        }
-        ///auto readmeContent = juce::String(BinaryData::README_md, BinaryData::README_mdSize);
-
+        
         // Set up the TextEditor to display the content
         textEditor.setMultiLine(true);
         textEditor.setReadOnly(true);
+        textEditor.setCaretVisible(false);
         textEditor.setScrollbarsShown(true);
         textEditor.setText(readmeContent);
-
+        
         addAndMakeVisible(textEditor);
     }
 
     void resized() override
     {
-        auto area = getLocalBounds();
-        auto topArea = area.removeFromTop(100); // Reserve space for top row
-        auto bounds = getLocalBounds().reduced(10);
-        textEditor.setBounds(bounds.removeFromTop(bounds.getHeight() - 40));
-
-        appInfoLabel.setBounds(topArea.removeFromLeft(getWidth() / 2));
-        appIconComponent.setBounds(topArea); // Takes the right half of the top row
-
-        readmeLabel.setBounds(area); // Remainder is for the README
+        const int border = 15;
+        auto bounds = getLocalBounds().reduced(border);
+        // Split the top into two sections: about and icon
+        auto topSection = bounds.removeFromTop(120); // Adjust the height of the top section as needed
+        auto aboutArea = topSection.removeFromLeft(proportionOfWidth(0.7f));
+        appInfoLabel.setBounds(aboutArea);
+        auto iconArea = topSection; // Remaining space on the right
+        appIconComponent.setBounds(iconArea);
+        // Remaining space is for the text editor
+        textEditor.setBounds(bounds.reduced(border));
     }
 
 private:
     juce::TextEditor textEditor;
+    ///juce::WebBrowserComponent textEditor;
     juce::Label appInfoLabel;
     juce::ImageComponent appIconComponent;
     juce::Image appIcon;
@@ -85,7 +68,7 @@ void showAboutDialog(juce::Component* parent)
     juce::DialogWindow::LaunchOptions options;
     options.content.setOwned(new AboutDialog());
     options.content->setSize(600, 400); // Adjust dialog size as needed
-    options.dialogTitle = "About CsundVST3";
+    options.dialogTitle = "About CsoundVST3";
     options.dialogBackgroundColour = juce::Colours::darkgrey;
     options.escapeKeyTriggersCloseButton = true;
     options.useNativeTitleBar = true;

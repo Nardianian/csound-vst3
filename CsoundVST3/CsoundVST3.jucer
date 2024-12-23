@@ -9,6 +9,11 @@
               pluginAAXCategory="16">
   <MAINGROUP id="LqzlLf" name="CsoundVST3">
     <GROUP id="{F1857533-76E2-0618-E2D7-AEC126AA9CC7}" name="Source">
+      <FILE id="UYrnjs" name="angel_concert.png" compile="0" resource="1"
+            file="Resources/angel_concert.png"/>
+      <FILE id="nCrV9G" name="angel_concert.icns" compile="0" resource="1"
+            file="Resources/angel_concert.icns"/>
+      <FILE id="aTaxKa" name="README.md" compile="0" resource="1" file="Resources/README.md"/>
       <FILE id="DIRoQJ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>
       <FILE id="CmBz99" name="PluginProcessor.h" compile="0" resource="0"
