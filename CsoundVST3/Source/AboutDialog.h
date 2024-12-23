@@ -28,13 +28,11 @@ public:
         appInfoLabel.setBorderSize(juce::BorderSize<int>(15));
         addAndMakeVisible(appInfoLabel);
         
-        // Set up the TextEditor to display the content
         textEditor.setMultiLine(true);
         textEditor.setReadOnly(true);
         textEditor.setCaretVisible(false);
         textEditor.setScrollbarsShown(true);
         textEditor.setText(readmeContent);
-        
         addAndMakeVisible(textEditor);
     }
 
@@ -54,7 +52,6 @@ public:
 
 private:
     juce::TextEditor textEditor;
-    ///juce::WebBrowserComponent textEditor;
     juce::Label appInfoLabel;
     juce::ImageComponent appIconComponent;
     juce::Image appIcon;
@@ -62,7 +59,6 @@ private:
     juce::Label readmeLabel;
 };
 
-// A helper function to create and show the dialog
 void showAboutDialog(juce::Component* parent)
 {
     juce::DialogWindow::LaunchOptions options;
@@ -73,8 +69,6 @@ void showAboutDialog(juce::Component* parent)
     options.escapeKeyTriggersCloseButton = true;
     options.useNativeTitleBar = true;
     options.resizable = true;
-
-    // Show the dialog
     options.launchAsync();
 }
 

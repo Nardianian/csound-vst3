@@ -1,8 +1,6 @@
-CsoundVST3
-
-By Michael Gogins
-
-https://michaelgogins.tumblr.com
+# CsoundVST3
+## By Michael Gogins
+## https://michaelgogins.tumblr.com
 
 All music and examples herein are licensed under the Creative Commons 
 Attribution-NonCommercial-ShareAlike 4.0 International License at 
@@ -16,7 +14,7 @@ full-featured VST3 plugin version of Csound. However, CsoundVST3 enables
 editing .csd text directly within DAW projects. In some cases, this can 
 greatly simplify and speed up the user's workflow.
 
-Introduction
+## Introduction
 
 CsoundVS3 enables the Csound audio programming language (https://csound.com/) 
 to be used within digital audio workstations as a VST3 plugin instrument and 
@@ -37,7 +35,7 @@ MIDI control change messages.
 
 Please log any bug reports or feature requests as a GitHub issue.
 
-Installation
+## Installation
 
 Download the installation archive from https://github.com/gogins/csound-vst3 
 and unzip it.
@@ -46,7 +44,7 @@ Copy the CsoundVST3.vst3 directory and its contents to your user VST3 plugins
 directory. For example, in macOS, that would normally end up as 
 ~/Library/Audio/Plug-Ins/VST3/CsoundVST3.vst3.
 
-Usage
+## Usage
 
  1. Write a Csound .csd file that optionally outputs stereo audio, optionally 
     accepts stereo audio input, optionally accepts MIDI channel messages, and 
@@ -106,7 +104,7 @@ If you need something like presets, you can map MIDI controllers to Csound
 control variables in your csd, and then you can save the state of your MIDI 
 controllers in your DAW project.
 
-Release notes for version 1.0beta
+## Release notes for version 1.0beta
 
 This is the initial release.
 
