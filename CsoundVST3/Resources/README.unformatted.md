@@ -1,17 +1,14 @@
-<p>
-<a rel="license" href="http://creativecommons.org/licenses/by-nc-sa/4.0/"><img alt="Creative Commons License" 
-style="border-width:0" src="https://i.creativecommons.org/l/by-nc-sa/4.0/88x31.png" />
-</a>
-<p>All music and examples herein are licensed under the  
-<a rel="ccncsa4" href="http://creativecommons.org/licenses/by-nc-sa/4.0/">
-Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License</a>.
+All music and examples herein are licensed under the Creative Commons 
+Attribution-NonCommercial-ShareAlike 4.0 International License at 
+http://creativecommons.org/licenses/by-nc-sa/4.0/.
+
 <p>
 <img alt="GNU Affero General License v3" 
 style="border-width:0" src="https://www.gnu.org/graphics/agplv3-155x51.png" /> 
-</p><p>All code herein is licensed under the  
-<a rel="agplv3" href="https://www.gnu.org/licenses/agpl-3.0.html">
-GNU Affero General Public License, version 3</a>.
-
+</p><p>
+All code herein is licensed under the GNU Affero General Public License, 
+version 3 at https://www.gnu.org/licenses/agpl-3.0.html.
+    
 CsoundVST3
 By Michael Gogins
 https://michaelgogins.tumblr.com
