@@ -1,6 +1,14 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include <cassert>
+#include <csignal>
+
+/**
+ * Pause the debugger on a ThreadSanitizer report.
+ */
+extern "C" void __tsan_on_report() {
+    std::raise(SIGTRAP);
+}
 
 //==============================================================================
 CsoundVST3AudioProcessor::CsoundVST3AudioProcessor()
@@ -88,8 +96,9 @@ void CsoundVST3AudioProcessor::csoundMessageCallback_(CSOUND *csound, int level,
 
 void CsoundVST3AudioProcessor::releaseResources()
 {
-    // When playback stops, you can use this as an opportunity to free up any
-    // spare memory, etc.
+    csoundMessage("Stopping due to exit from host...\n");
+    DBG("CsoundVST3AudioProcessor::releaseResources...");
+    stop();
 }
 
 bool CsoundVST3AudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
@@ -99,14 +108,12 @@ bool CsoundVST3AudioProcessor::isBusesLayoutSupported (const BusesLayout& layout
     if (mainOutput != juce::AudioChannelSet::mono() &&
         mainOutput != juce::AudioChannelSet::stereo())
         return false; // Only mono or stereo output supported
-
     // Check input bus layout
     const auto& mainInput = layouts.getMainInputChannelSet();
     if (mainInput.isDisabled() || // Allow no input
         mainInput == juce::AudioChannelSet::mono() ||
         mainInput == juce::AudioChannelSet::stereo())
         return true; // Input can be mono, stereo, or none
-
     return false; // Other configurations not supported
 }
 
@@ -114,15 +121,12 @@ int CsoundVST3AudioProcessor::midiDeviceOpen(CSOUND *csound_, void **user_data,
                           const char *devName)
 {
     auto csound_host_data = csoundGetHostData(csound_);
-    /// CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     *user_data = (void *)csound_host_data;
     return 0;
 }
 
 int CsoundVST3AudioProcessor::midiDeviceClose(CSOUND *csound_, void *user_data)
 {
-    /// auto csound_host_data = csoundGetHostData(csound_);
-    /// CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     return 0;
 }
 /**
@@ -142,7 +146,6 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
     {
         return 0;
     }
-    ///DBG(">>>>>>>>");
     while (processor->midi_input_fifo.empty() == false)
     {
         char buffer[0x200];
@@ -183,12 +186,11 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
 #if defined(JUCE_DEBUG)
             std::snprintf(buffer, sizeof(buffer),
                           " > end midiRead   #%5lld: cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end%8llu  %s", message.sequence, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
-            ///DBG(buffer);
+            /// DBG(buffer);
 #endif
             return bytes_read;
         }
     }
-    ///DBG("<<<<<<<<");
     return bytes_read;
 }
 
@@ -202,7 +204,6 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const u
     CsoundVST3AudioProcessor *processor = static_cast<CsoundVST3AudioProcessor *>(csound_host_data);
     MidiChannelMessage channel_message;
     channel_message.plugin_frame = processor->plugin_frame;
-    ///channel_message.csound_frame = processor->csound_block_begin + processor->csound_frame;
     channel_message.message = juce::MidiMessage(midi_buffer, midi_buffer_size, 0);
     processor->midi_output_fifo.push_back(channel_message);
     return result;
@@ -219,6 +220,7 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const u
  */
 void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position)
 {
+    juce::MessageManagerLock lock;
     /// DBG("Synchronizing score...\n");
     if (play_head_position->getIsPlaying() == false)
     {
@@ -226,6 +228,10 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
     }
     juce::Optional<int64_t> optional_host_frame_index = play_head_position->getTimeInSamples();
     if (optional_host_frame_index == false)
+    {
+        return;
+    }
+    if (csoundIsPlaying == false)
     {
         return;
     }
@@ -237,16 +243,6 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
         if (optional_host_frame_seconds == true)
         {
             DBG("Looping...");
-            // We recompile to ensure that Csound's alwayson opcode works when
-            // looping.
-            if (csd.length()  > 0) {
-                const char* csd_text = strdup(csd.toRawUTF8());
-                if (csd_text) {
-                    auto result = csound.CompileCsdText(csd_text);
-                    std::free((void *)csd_text);
-                    result = csound.Start();
-                }
-            }
             auto host_frame_seconds = *optional_host_frame_seconds;
             csound.SetScoreOffsetSeconds(host_frame_seconds);
         }
@@ -323,15 +319,12 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
      512 = raw, all colours
      All messages can be suppressed by using message level 16.
      */
-    // I suggest: 1 + 2 + 128 + 32 = 162.
+    // I suggest: 1 + 2 + 128 + 32 = 163.
     char buffer[0x200];
     // Overrride the csd's sample rate.
     int host_sample_rate = getSampleRate();
     snprintf(buffer, sizeof(buffer), "--sample-rate=%d", host_sample_rate);
     csound.SetOption(buffer);
-    int host_frames_per_block = getBlockSize();
-    snprintf(buffer, sizeof(buffer), "--ksmps=%d", host_frames_per_block);
-    ///csound.SetOption(buffer);
     // If there is a csd, compile it.
     if (csd.length()  > 0) {
         const char* csd_text = strdup(csd.toRawUTF8());
@@ -427,10 +420,6 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     {
         host_block_frame = *optional_time_in_samples;
     }
-    //if (play_head_position->getIsPlaying() == false)
-    //{
-    //    return;
-    //}
     synchronizeScore(play_head_position);
     juce::ScopedNoDenormals noDenormals;
     auto host_audio_buffer_frames = host_audio_buffer.getNumSamples();
@@ -468,13 +457,9 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
     for (const auto metadata : host_midi_buffer)
     {
         auto message = metadata.getMessage();
-        // This timestamp comes from JUCE and the host,
-        // and is relative to the host block.
-        /// auto timestamp = metadata.samplePosition;
         MidiChannelMessage channel_message;
         channel_message.sequence = midi_input_sequence++;
         channel_message.message = message;
-        /// channel_message.message.setTimeStamp(timestamp);
         channel_message.plugin_frame = host_block_begin + metadata.samplePosition;
         channel_message.csound_frame = channel_message.plugin_frame % csound_frames;
         
@@ -531,7 +516,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             {
                 for (int csound_output_channel = 0; csound_output_channel < csound_output_channels; ++csound_output_channel)
                 {
-                    auto sample = spout[(csound_block_frame * csound_output_channels) + csound_output_channel];
+                    auto sample = iodbfs * spout[(csound_block_frame * csound_output_channels) + csound_output_channel];
                     audio_output_fifo.push_back(sample);
                 }
             }
@@ -554,8 +539,6 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
 #if defined(JUCE_DEBUG)
             output_messages++;
             char buffer[0x200];
-            // Log location, plugin frame, host begin, timestamp, host end, csound
-            // begin, csound frame, csound end.
             std::snprintf(buffer, sizeof(buffer),
             "MIDI output to host#%5d: frame%8llu timestamp%8llu csound: begin%8llu frame %8llu %8llu end%8llu %s", output_messages, plugin_frame, timestamp, csound_block_begin, plugin_frame, csound_frame, csound_block_end, message.message.getDescription().toRawUTF8());
             DBG(buffer);

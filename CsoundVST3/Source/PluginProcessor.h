@@ -85,7 +85,7 @@ public:
     void stop();
 
     Csound csound;
-    bool csoundIsPlaying = false;
+    std::atomic<bool> csoundIsPlaying = false;
     std::function<void(const juce::String&)> messageCallback;
     juce::String csd;
     juce::PluginHostType plugin_host_type;

@@ -2,9 +2,10 @@
 <CsOptions>
 </CsOptions>
 <CsInstruments>
-sr          =           192000
+sr          =           48000
 ksmps       =           128
 nchnls      =           2
+0dbfs       =           1
 ;--------------------------------------------------------
 ;Instrument 1 : plucked strings chorused left/right and
 ;       pitch-shifted and delayed taps thru exponential
