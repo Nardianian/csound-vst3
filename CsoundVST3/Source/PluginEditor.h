@@ -23,7 +23,6 @@ public:
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
-    void appendToMessageLog(const juce::String& message);
     void changeListenerCallback(juce::ChangeBroadcaster*) override;
 private:
     CsoundVST3AudioProcessor& audioProcessor;

@@ -57,12 +57,6 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     verticalLayout.setItemLayout(2, -0.1, -0.9, -0.5); // Bottom window
     addAndMakeVisible(divider);
     codeEditor.loadContent(audioProcessor.csd);
-    // Set up callback for messages
-    audioProcessor.messageCallback = [this](const juce::String& message) {
-        juce::MessageManager::callAsync([this, message]() {
-            appendToMessageLog(message);
-        });
-    };
 
     // Listen for changes from the processor
     audioProcessor.addChangeListener(this);
@@ -191,19 +185,13 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
 
 }
 
-void CsoundVST3AudioProcessorEditor::appendToMessageLog(const juce::String& message)
+void CsoundVST3AudioProcessorEditor::changeListenerCallback(juce::ChangeBroadcaster*)
 {
     while (audioProcessor.csound_messages_fifo.empty() == false)
     {
         juce::String message = audioProcessor.csound_messages_fifo.back();
         audioProcessor.csound_messages_fifo.pop_back();
-        messageLog.moveCaretToEnd(false); 
+        messageLog.moveCaretToEnd(false);
         messageLog.insertTextAtCaret(message);
-    }
-}
-
-void CsoundVST3AudioProcessorEditor::changeListenerCallback(juce::ChangeBroadcaster*)
-{
-    // Handle other processor-to-editor communication here if needed.
-}
+    }}
 

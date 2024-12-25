@@ -81,10 +81,8 @@ void CsoundVST3AudioProcessor::changeProgramName (int index, const juce::String&
 
 void CsoundVST3AudioProcessor::csoundMessage(const juce::String message)
 {
-    if (messageCallback)
-    {
-        messageCallback(message);
-    }
+    // Don't let messages pile up forever here.
+    csound_messages_fifo.push_back(message);
     sendChangeMessage();
     DBG(message);
 }
@@ -95,8 +93,6 @@ void CsoundVST3AudioProcessor::csoundMessageCallback_(CSOUND *csound, int level,
     auto processor = static_cast<CsoundVST3AudioProcessor *>(host_data);
     char buffer[0x2000];
     std::vsnprintf(&buffer[0], sizeof(buffer), format, valist);
-    // Don't let messages pile up forever here.
-    processor->csound_messages_fifo.push_back(buffer);
     processor->csoundMessage(buffer);
 }
 
@@ -226,7 +222,7 @@ int CsoundVST3AudioProcessor::midiWrite(CSOUND *csound_, void *userData, const u
  */
 void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHead::PositionInfo> &play_head_position)
 {
-    juce::MessageManagerLock lock;
+    /// juce::MessageManagerLock lock;
     /// DBG("Synchronizing score...\n");
     if (play_head_position->getIsPlaying() == false)
     {
@@ -383,15 +379,16 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     {
         csoundIsPlaying = false;
         suspendProcessing(true);
+        csoundMessage("CsoundVST3AudioProcessor::prepareToPlay: Ready to play.\n");
     }
     else
     {
         csoundIsPlaying = true;
         suspendProcessing(false);
+        csoundMessage("CsoundVST3AudioProcessor::prepareToPlay: Csound is plqying.\n");
     }
     plugin_frame = 0;
     midi_input_sequence = 0;
-    csoundMessage("CsoundVST3AudioProcessor::prepareToPlay: Ready to play.\n");
  }
 
 /**
