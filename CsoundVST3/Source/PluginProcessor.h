@@ -125,6 +125,8 @@ private:
     std::deque<double> audio_input_fifo;
     std::deque<MidiChannelMessage> midi_output_fifo;
     std::deque<double> audio_output_fifo;
+public:
+    std::deque<juce::String> csound_messages_fifo;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)

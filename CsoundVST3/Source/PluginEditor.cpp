@@ -193,8 +193,13 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
 
 void CsoundVST3AudioProcessorEditor::appendToMessageLog(const juce::String& message)
 {
-    messageLog.moveCaretToEnd(false); // Move caret to end to append.
-    messageLog.insertTextAtCaret(message);
+    while (audioProcessor.csound_messages_fifo.empty() == false)
+    {
+        juce::String message = audioProcessor.csound_messages_fifo.back();
+        audioProcessor.csound_messages_fifo.pop_back();
+        messageLog.moveCaretToEnd(false); 
+        messageLog.insertTextAtCaret(message);
+    }
 }
 
 void CsoundVST3AudioProcessorEditor::changeListenerCallback(juce::ChangeBroadcaster*)

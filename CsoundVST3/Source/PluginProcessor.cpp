@@ -4,11 +4,15 @@
 #include <csignal>
 
 /**
- * Pause the debugger on a ThreadSanitizer report.
+ * Permits a programmer to set a breakpoint in order to pause when
+ * ThreadSanitiizer issues a report.
  */
+
 extern "C" void __tsan_on_report() {
     std::raise(SIGTRAP);
+    std::fprintf(stderr, "__tsan_on_report\n");
 }
+
 
 //==============================================================================
 CsoundVST3AudioProcessor::CsoundVST3AudioProcessor()
@@ -91,6 +95,8 @@ void CsoundVST3AudioProcessor::csoundMessageCallback_(CSOUND *csound, int level,
     auto processor = static_cast<CsoundVST3AudioProcessor *>(host_data);
     char buffer[0x2000];
     std::vsnprintf(&buffer[0], sizeof(buffer), format, valist);
+    // Don't let messages pile up forever here.
+    processor->csound_messages_fifo.push_back(buffer);
     processor->csoundMessage(buffer);
 }
 
@@ -256,6 +262,7 @@ void CsoundVST3AudioProcessor::synchronizeScore(juce::Optional<juce::AudioPlayHe
 void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     juce::MessageManagerLock lock;
+    csound_messages_fifo.clear();
     auto editor = getActiveEditor();
     if (editor)
     {
@@ -330,8 +337,16 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
         const char* csd_text = strdup(csd.toRawUTF8());
         if (csd_text) {
             auto result = csound.CompileCsdText(csd_text);
+            if (result != 0)
+            {
+                csoundMessage("prepareToPlay: csound.CompileCsdText failed.\n");
+            }
             std::free((void *)csd_text);
             result = csound.Start();
+            if (result != 0)
+            {
+                csoundMessage("prepareToPlay: csound.Start failed.\n");
+            }
         }
     }
     odbfs = csound.Get0dBFS();
@@ -475,7 +490,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             assert(channel_message.plugin_frame >= host_block_begin && channel_message.plugin_frame < host_block_end);
             std::snprintf(buffer, sizeof(buffer),
                           "Host processBlock #%5lld: time:%9.4f host begin%8llu plugin%8llu msg%8llu cs%8llu host end%8llu  %s", channel_message.sequence, tyme, host_block_begin, plugin_frame, channel_message.plugin_frame, channel_message.csound_frame, host_block_end, message.getDescription().toRawUTF8());
-            DBG(buffer);
+            /// DBG(buffer);
 #endif
         }
     }
@@ -559,8 +574,12 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
                 {
                     sample = audio_output_fifo.front();
                     audio_output_fifo.pop_front();
+                    host_audio_buffer.setSample(host_output_channel, host_audio_buffer_frame, sample);
                 }
-                host_audio_buffer.setSample(host_output_channel, host_audio_buffer_frame, sample);
+                else
+                {
+                    DBG("processBlock: Oops, audio output FIFO is empty!");
+                }
             }
         }
 }

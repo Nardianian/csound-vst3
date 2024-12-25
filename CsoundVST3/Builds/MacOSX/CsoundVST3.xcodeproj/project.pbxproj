@@ -933,10 +933,12 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = NO;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 9UX792D3V9;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1043,7 +1045,7 @@
 					"-lCsoundVST3",
 				);
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -d arm64_$arm64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I \"$(DEVELOPER_DIR)/Extras/CoreAudio/AudioUnits/AUPublic/AUBase\" -I \"$(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/AudioUnit.framework/Headers\"";
-				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3.au;
 				PRODUCT_NAME = CsoundVST3;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USE_HEADERMAP = NO;
@@ -1055,16 +1057,19 @@
 		1173D20CDA2137190BEC2614 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
 				CODE_SIGN_ENTITLEMENTS = debug.entitlements;
 				CODE_SIGN_IDENTITY = "Apple Development: Michael Gogins (JC94KD4B5T)";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
 				DEVELOPMENT_TEAM = 9UX792D3V9;
 				ENABLE_APP_SANDBOX = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1169,7 +1174,7 @@
 					"-bundle",
 					"-lCsoundVST3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3.vst3;
 				PRODUCT_NAME = CsoundVST3;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USE_HEADERMAP = NO;
@@ -1429,9 +1434,11 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				COMBINE_HIDPI_IMAGES = YES;
 				CONFIGURATION_BUILD_DIR = "$(PROJECT_DIR)/build/$(CONFIGURATION)";
 				COPY_PHASE_STRIP = NO;
+				"DEVELOPMENT_TEAM[sdk=macosx*]" = 9UX792D3V9;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -1537,7 +1544,7 @@
 					"-lCsoundVST3",
 				);
 				OTHER_REZFLAGS = "-d ppc_$ppc -d i386_$i386 -d ppc64_$ppc64 -d x86_64_$x86_64 -d arm64_$arm64 -I /System/Library/Frameworks/CoreServices.framework/Frameworks/CarbonCore.framework/Versions/A/Headers -I \"$(DEVELOPER_DIR)/Extras/CoreAudio/AudioUnits/AUPublic/AUBase\" -I \"$(DEVELOPER_DIR)/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/System/Library/Frameworks/AudioUnit.framework/Headers\"";
-				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3.au;
 				PRODUCT_NAME = CsoundVST3;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USE_HEADERMAP = NO;
@@ -1687,6 +1694,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development: Michael Gogins (JC94KD4B5T)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = NO;
@@ -2079,6 +2087,7 @@
 		E7D21B6E67AE60CFDC0BDEB8 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ADDRESS_SANITIZER_CONTAINER_OVERFLOW = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++17";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_LINK_OBJC_RUNTIME = NO;
@@ -2090,6 +2099,7 @@
 				DEAD_CODE_STRIPPING = NO;
 				DEVELOPMENT_TEAM = 9UX792D3V9;
 				ENABLE_APP_SANDBOX = YES;
+				ENABLE_USER_SELECTED_FILES = readwrite;
 				EXCLUDED_ARCHS = "";
 				FRAMEWORK_SEARCH_PATHS = (
 					/Library/Frameworks,
@@ -2195,7 +2205,7 @@
 					"-bundle",
 					"-lCsoundVST3",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3;
+				PRODUCT_BUNDLE_IDENTIFIER = com.IrreducibleProductions.CsoundVST3.vst3;
 				PRODUCT_NAME = CsoundVST3;
 				STRIP_INSTALLED_PRODUCT = NO;
 				USE_HEADERMAP = NO;
@@ -2226,6 +2236,7 @@
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "Apple Development: Michael Gogins (JC94KD4B5T)";
 				DEBUG_INFORMATION_FORMAT = dwarf;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = NO;
