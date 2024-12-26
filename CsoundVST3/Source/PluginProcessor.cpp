@@ -82,8 +82,8 @@ void CsoundVST3AudioProcessor::changeProgramName (int index, const juce::String&
 void CsoundVST3AudioProcessor::csoundMessage(const juce::String message)
 {
     // Don't let messages pile up forever here.
+    std::lock_guard<std::mutex> lock(csound_messages_mutex);
     csound_messages_fifo.push_back(message);
-    sendChangeMessage();
     DBG(message);
 }
 
@@ -328,6 +328,9 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     int host_sample_rate = getSampleRate();
     snprintf(buffer, sizeof(buffer), "--sample-rate=%d", host_sample_rate);
     csound.SetOption(buffer);
+    // Prevents funny characters from being displaned in Csound messages.
+    snprintf(buffer, sizeof(buffer), "-+msg_color=0");
+    csound.SetOption(buffer);
     // If there is a csd, compile it.
     if (csd.length()  > 0) {
         const char* csd_text = strdup(csd.toRawUTF8());
@@ -553,7 +556,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             char buffer[0x200];
             std::snprintf(buffer, sizeof(buffer),
             "MIDI output to host#%5d: frame%8llu timestamp%8llu csound: begin%8llu frame %8llu %8llu end%8llu %s", output_messages, plugin_frame, timestamp, csound_block_begin, plugin_frame, csound_frame, csound_block_end, message.message.getDescription().toRawUTF8());
-            DBG(buffer);
+            /// DBG(buffer);
 #endif
         }
         else

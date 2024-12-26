@@ -13,7 +13,8 @@
 
 class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor,
 public juce::Button::Listener,
-public juce::ChangeListener
+public juce::ChangeListener,
+public juce::Timer
 // public juce::TooltipWindow
 {
 public:
@@ -24,6 +25,7 @@ public:
     void paint (juce::Graphics&) override;
     void resized() override;
     void changeListenerCallback(juce::ChangeBroadcaster*) override;
+    void timerCallback() override;
 private:
     CsoundVST3AudioProcessor& audioProcessor;
     juce::CodeDocument csd_document;
@@ -39,6 +41,7 @@ private:
     juce::Label statusBar;
     juce::StretchableLayoutManager verticalLayout;
     juce::StretchableLayoutResizerBar divider;
+    
     
 public:
     juce::CodeEditorComponent codeEditor;

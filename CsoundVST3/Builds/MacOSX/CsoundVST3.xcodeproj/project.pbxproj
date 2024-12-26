@@ -88,6 +88,18 @@
 		355010E52D1CA5920029B2E7 /* Metal.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDC35ED057BA203EC9CB1970 /* Metal.framework */; };
 		355010E62D1CA5920029B2E7 /* MetalKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 671B900729D79EA9D0F37A00 /* MetalKit.framework */; };
 		355010E72D1CA5920029B2E7 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C08520F350D4F925B0BD06DC /* CsoundLib64.framework */; };
+		355010F62D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */; };
+		355010F72D1D6ABE0029B2E7 /* Xanadu.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F52D1D6ABE0029B2E7 /* Xanadu.csd */; };
+		355010F82D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */; };
+		355010F92D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */; };
+		355010FA2D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */; };
+		355010FB2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F52D1D6ABE0029B2E7 /* Xanadu.csd */; };
+		355010FC2D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */; };
+		355010FD2D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */; };
+		355010FE2D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */; };
+		355010FF2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F52D1D6ABE0029B2E7 /* Xanadu.csd */; };
+		355011002D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */; };
+		355011012D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */; };
 		39E87734C0C9CB8A5E694EB4 /* DiscRecording.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3ABC13A6EDCB843B5163D1F /* DiscRecording.framework */; };
 		420BAAFEE1C85102F21B90F6 /* include_juce_audio_plugin_client_VST3.mm in Sources */ = {isa = PBXBuildFile; fileRef = 980D6A1A1FD40A427018BDED /* include_juce_audio_plugin_client_VST3.mm */; };
 		423AEFF82AC9482E13C54A99 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C08520F350D4F925B0BD06DC /* CsoundLib64.framework */; };
@@ -203,6 +215,10 @@
 		32F817BB47D48FE96278F849 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		34BEA4498D73AB17B455445D /* include_juce_audio_formats.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; name = include_juce_audio_formats.mm; path = ../../JuceLibraryCode/include_juce_audio_formats.mm; sourceTree = SOURCE_ROOT; };
 		34EE0295E29991EC3A5BB1B1 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = CsoundVST3.csd; sourceTree = "<group>"; };
+		355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = CsoundVST3AudioIn.csd; sourceTree = "<group>"; };
+		355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = CsoundVST3MidiOut.csd; sourceTree = "<group>"; };
+		355010F52D1D6ABE0029B2E7 /* Xanadu.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = Xanadu.csd; sourceTree = "<group>"; };
 		37A573A6007B8058CE53AAB6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38EA8921B126358B8821C4B1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		3A9326F73BE65FABFC828D60 /* Info-AU.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-AU.plist"; sourceTree = SOURCE_ROOT; };
@@ -447,6 +463,10 @@
 		8C2FECF76346E8C1451EE53B /* CsoundVST3 */ = {
 			isa = PBXGroup;
 			children = (
+				355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */,
+				355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */,
+				355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */,
+				355010F52D1D6ABE0029B2E7 /* Xanadu.csd */,
 				20380E1C0E98F7331B4FC17C /* Source */,
 			);
 			name = CsoundVST3;
@@ -761,6 +781,10 @@
 			files = (
 				355010D72D1CA5920029B2E7 /* RecentFilesMenuTemplate.nib in Resources */,
 				355010D82D1CA5920029B2E7 /* Icon.icns in Resources */,
+				355010F62D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */,
+				355010F72D1D6ABE0029B2E7 /* Xanadu.csd in Resources */,
+				355010F82D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */,
+				355010F92D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -770,6 +794,10 @@
 			files = (
 				355010C62D1CA5920029B2E7 /* RecentFilesMenuTemplate.nib in Resources */,
 				355010C72D1CA5920029B2E7 /* Icon.icns in Resources */,
+				355010FE2D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */,
+				355010FF2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */,
+				355011002D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */,
+				355011012D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -779,6 +807,10 @@
 			files = (
 				A8D3F50A843BA9B66F138D0D /* RecentFilesMenuTemplate.nib in Resources */,
 				44E8016A437BCD6FCFDBB69D /* Icon.icns in Resources */,
+				355010FA2D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */,
+				355010FB2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */,
+				355010FC2D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */,
+				355010FD2D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

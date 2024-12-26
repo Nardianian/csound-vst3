@@ -3,27 +3,35 @@
 ## https://michaelgogins.tumblr.com
 
 All music and examples herein are licensed under the Creative Commons 
-Attribution-NonCommercial-ShareAlike 4.0 International License at 
-http://creativecommons.org/licenses/by-nc-sa/4.0/.
+Attribution-NonCommercial-ShareAlike 4.0 International License  
+(http://creativecommons.org/licenses/by-nc-sa/4.0/).
 
 All code herein is licensed under the GNU Affero General Public License, 
-version 3 at https://www.gnu.org/licenses/agpl-3.0.html.
+version 3 (https://www.gnu.org/licenses/agpl-3.0.html).
+
+This is the simplest plugin I could write that provides _all_ the 
+functionality of Csound to digital audio workstations (DAWs) as a VST3 or 
+AudioUnit plugin. There is also a standalone app version.
     
 Note that Cabbage (https://github.com/rorywalsh/cabbage) provides a much more 
-full-featured VST3 plugin version of Csound. However, CsoundVST3 enables 
-editing .csd text directly within DAW projects. In some cases, this can 
+full-featured VST3 plugin version of Csound. _However, CsoundVST3 enables 
+editing .csd text directly within DAW projects._ In many cases, this can 
 greatly simplify and speed up the user's workflow.
 
 ## Introduction
 
-CsoundVS3 enables the Csound audio programming language (https://csound.com/) 
-to be used within digital audio workstations as a VST3 plugin instrument and 
-signal processing effect.
+CsoundVST3 enables the Csound audio programming language (https://csound.com/) 
+to be used within digital audio workstations as a VST3 plugin instrument 
+and/or signal processing effect.
 
 CsoundVST3 has audio inputs, audio outputs, MIDI inputs, and MIDI outputs. 
 The plugin hosts one .csd file, which can be edited from the plugin's user 
 interface. The interface also displays Csound's runtime messages. Csound's 
-score time is synchronized with the DAW's playback time, which can loop.
+score time is synchronized with the DAW's playback time, which can loop. This 
+enables using Csound score events embedded in the .csd file to play in sync 
+with the DAW's playback head. And that, in turn, brings _all_ of the technical 
+resources of electroacoustic music, or computer music, or whatever you want 
+to call it, into the DAW.
 
 CsoundVST3 has _all_ the power of command-line Csound. CsoundVST3 can read and 
 write on the user's filesystem, load plugin opcodes, and execute system 
@@ -41,8 +49,11 @@ Download the installation archive from https://github.com/gogins/csound-vst3
 and unzip it.
 
 Copy the CsoundVST3.vst3 directory and its contents to your user VST3 plugins 
-directory. For example, in macOS, that would normally end up as 
+directory. For example, on macOS, that would normally end up as 
 ~/Library/Audio/Plug-Ins/VST3/CsoundVST3.vst3.
+
+To use the standalone version of CsoundVST3, copy CsoundvST3.app to your 
+computer's Applications folder.
 
 ## Usage
 
@@ -52,10 +63,10 @@ directory. For example, in macOS, that would normally end up as
     can map MIDI channel message fields to your Csound instrument pfields, 
     and should open MIDI inputs and, if needed, MIDI outputs, for example:
     
-    -MN -QN --midi-key=4 --midi-velocity=5 -m163 -+msg_color=0 --daemon  
+    -MN -QN --midi-key=4 --midi-velocity=5 -m163 --daemon  
     
-    Note that "-MN" must used for MIDI input in a DAW, and that "-QN" must be 
-    used for MIDI output to the DAW. For standalone use, the actual device 
+    Note that "-MN" must used for MIDI input from the DAW, and that "-QN" must 
+    be used for MIDI output to the DAW. For standalone use, the actual device 
     number must be used in place of "N". CsoundVST3 prints a list of available 
     MIDI devices when it compiles the .csd.
     

@@ -60,6 +60,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
 
     // Listen for changes from the processor
     audioProcessor.addChangeListener(this);
+    startTimer(100);
 
     setSize(800, 600);
     setResizable(true, true);
@@ -67,6 +68,8 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
 
 CsoundVST3AudioProcessorEditor::~CsoundVST3AudioProcessorEditor()
 {
+    audioProcessor.removeChangeListener(this);
+    stopTimer();
 }
 
 //==============================================================================
@@ -187,11 +190,16 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
 
 void CsoundVST3AudioProcessorEditor::changeListenerCallback(juce::ChangeBroadcaster*)
 {
+}
+
+void CsoundVST3AudioProcessorEditor::timerCallback()
+{
+    std::lock_guard<std::mutex> lock(audioProcessor.csound_messages_mutex);
     while (audioProcessor.csound_messages_fifo.empty() == false)
     {
-        juce::String message = audioProcessor.csound_messages_fifo.back();
-        audioProcessor.csound_messages_fifo.pop_back();
+        juce::String message = audioProcessor.csound_messages_fifo.front();
+        audioProcessor.csound_messages_fifo.pop_front();
         messageLog.moveCaretToEnd(false);
         messageLog.insertTextAtCaret(message);
-    }}
-
+    }
+}

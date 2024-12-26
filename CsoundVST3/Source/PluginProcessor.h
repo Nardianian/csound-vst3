@@ -117,16 +117,20 @@ private:
     int64_t csound_block_end;
     int64_t host_block_begin;
     int64_t host_block_end;
-    
-    // Intermediate FIFOs simplify keeping track of overlapping or incomplete 
-    // blocks.
     int64_t midi_input_sequence;
+
+    // Intermediate FIFOs simplify keeping track of overlapping or incomplete 
+    // blocks of sample frames. These are used only by the processBlock
+    // thread, so are thread-safe.
     std::deque<MidiChannelMessage> midi_input_fifo;
     std::deque<double> audio_input_fifo;
     std::deque<MidiChannelMessage> midi_output_fifo;
     std::deque<double> audio_output_fifo;
 public:
+    // This FIFO is used by both the processBlock thread and the user
+    // interface thread, so it needs to be thread-safe.
     std::deque<juce::String> csound_messages_fifo;
+    std::mutex csound_messages_mutex;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)
