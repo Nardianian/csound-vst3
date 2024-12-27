@@ -1,25 +1,29 @@
 #/bin/bash
-PROJECT_DIR="~/csound-vst3"
-BUILD_DIR="$PROJECT_DIR/Builds/MacOSX/build/Release"
-OUTPUT_DIR="$PROJECT_DIR/Artifacts"
-
-# Build all targets in the project for release.
-cd "$PROJECT_DIR"
-xcodebuild -project Builds/MacOSX/CsoundVST3.xcodeproj -scheme All -configuration Release
-
-# Marshal the artifacts.
-mkdir -p "$OUTPUT_DIR"
-cp -R "$BUILD_DIR/CsoundVST3.vst3" "$OUTPUT_DIR/"
-cp -R "$BUILD_DIR/CsoundVST3.component" "$OUTPUT_DIR/"
-cp -R "$BUILD_DIR/CsoundVST3.app" "$OUTPUT_DIR/"
+echo "PACKAGING RELEASE FOR CSOUNDVST3"
+echo "First use Xcode to clean, build, archive, and make distrbution for the 'CsoundVST - All' scheme."
+echo "Then change to the distribution directory and run this script in it."
 
 # Validate the artifacts.
-codesign --verify --deep --strict --display --verbose=2 "$OUTPUT_DIR/CsoundVST3.vst3"
-codesign --verify --deep --strict --display --verbose=2 "$OUTPUT_DIR/CsoundVST3.component"
-codesign --verify --deep --strict --display --verbose=2 "$OUTPUT_DIR/CsoundVST3.app"
+echo
+echo "CsoundVST.vst3 VST3 plugin"
+echo
+codesign --verify --deep --strict --display --verbose=2 "Products/Users/michaelgogins/Library/Audio/Plug-Ins/VST3/CsoundVST3.vst3"
+echo
+echo "CsoundVST.component AudioUnit plugin"
+echo
+codesign --verify --deep --strict --display --verbose=2 "Products/Users/michaelgogins/Library/Audio/Plug-Ins/Components/CsoundVST3.component"
+echo
+echo "CsoundVST.app standalone app"
+echo
+codesign --verify --deep --strict --display --verbose=2 "Products/Applications/CsoundVST3.app"
+echo
 
 # Create an archive containing all artifacts.
-cd "$OUTPUT_DIR"
-zip -r CsoundVST3-Release.zip ./*
+cd Products
+zip -rq CsoundVST3-Release.zip ./*
 
-echo "Archive created at $OUTPUT_DIR/CsoundVST3-Release.zip"
+echo "Release package:"
+echo
+ls -ll
+echo
+unzip -l CsoundVST3-Release.zip
