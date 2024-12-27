@@ -100,6 +100,12 @@
 		355010FF2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F52D1D6ABE0029B2E7 /* Xanadu.csd */; };
 		355011002D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */; };
 		355011012D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */ = {isa = PBXBuildFile; fileRef = 355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */; };
+		357321BB2D1D6C920078FF65 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 357321B92D1D6C920078FF65 /* LICENSE */; };
+		357321BC2D1D6C920078FF65 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 357321BA2D1D6C920078FF65 /* README.md */; };
+		357321BD2D1D6C920078FF65 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 357321B92D1D6C920078FF65 /* LICENSE */; };
+		357321BE2D1D6C920078FF65 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 357321BA2D1D6C920078FF65 /* README.md */; };
+		357321BF2D1D6C920078FF65 /* LICENSE in Resources */ = {isa = PBXBuildFile; fileRef = 357321B92D1D6C920078FF65 /* LICENSE */; };
+		357321C02D1D6C920078FF65 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = 357321BA2D1D6C920078FF65 /* README.md */; };
 		39E87734C0C9CB8A5E694EB4 /* DiscRecording.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E3ABC13A6EDCB843B5163D1F /* DiscRecording.framework */; };
 		420BAAFEE1C85102F21B90F6 /* include_juce_audio_plugin_client_VST3.mm in Sources */ = {isa = PBXBuildFile; fileRef = 980D6A1A1FD40A427018BDED /* include_juce_audio_plugin_client_VST3.mm */; };
 		423AEFF82AC9482E13C54A99 /* CsoundLib64.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C08520F350D4F925B0BD06DC /* CsoundLib64.framework */; };
@@ -219,6 +225,9 @@
 		355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = CsoundVST3AudioIn.csd; sourceTree = "<group>"; };
 		355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = CsoundVST3MidiOut.csd; sourceTree = "<group>"; };
 		355010F52D1D6ABE0029B2E7 /* Xanadu.csd */ = {isa = PBXFileReference; lastKnownFileType = text; path = Xanadu.csd; sourceTree = "<group>"; };
+		357321B92D1D6C920078FF65 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Resources/LICENSE"; sourceTree = "<absolute>"; };
+		357321BA2D1D6C920078FF65 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "/Users/michaelgogins/csound-vst3/README.md"; sourceTree = "<absolute>"; };
+		357321C12D1EA5950078FF65 /* AboutDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AboutDialog.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/AboutDialog.h"; sourceTree = "<absolute>"; };
 		37A573A6007B8058CE53AAB6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38EA8921B126358B8821C4B1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		3A9326F73BE65FABFC828D60 /* Info-AU.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-AU.plist"; sourceTree = SOURCE_ROOT; };
@@ -261,7 +270,6 @@
 		B8BAC5852B345AB1D95DE8D3 /* PluginEditor.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PluginEditor.cpp; path = ../../Source/PluginEditor.cpp; sourceTree = SOURCE_ROOT; };
 		BDB55EE4A32C7F52CB82D37F /* libCsoundVST3.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libCsoundVST3.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		C08520F350D4F925B0BD06DC /* CsoundLib64.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CsoundLib64.framework; sourceTree = "<group>"; };
-		CAA898EE74DE0BF71767CC50 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = file.md; name = README.md; path = ../../Resources/README.md; sourceTree = SOURCE_ROOT; };
 		CDA9C02E9A18ADD9726C7A9C /* include_juce_graphics_Harfbuzz.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = include_juce_graphics_Harfbuzz.cpp; path = ../../JuceLibraryCode/include_juce_graphics_Harfbuzz.cpp; sourceTree = SOURCE_ROOT; };
 		D39AAC3C535CAB670C8EBB0B /* juce_audio_devices */ = {isa = PBXFileReference; lastKnownFileType = folder; name = juce_audio_devices; path = "~/JUCE/modules/juce_audio_devices"; sourceTree = "<absolute>"; };
 		D485E1BB6605A14C6FB69BD1 /* Info-Standalone_Plugin.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-Standalone_Plugin.plist"; sourceTree = SOURCE_ROOT; };
@@ -379,6 +387,12 @@
 				F0F358BC08811A5D7BCFACBD /* Info-VST3_Manifest_Helper.plist */,
 				689834D6EF9AFAF266B77178 /* RecentFilesMenuTemplate.nib */,
 				993E0C30691A537C39E354F4 /* Icon.icns */,
+				355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */,
+				355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */,
+				355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */,
+				355010F52D1D6ABE0029B2E7 /* Xanadu.csd */,
+				357321B92D1D6C920078FF65 /* LICENSE */,
+				357321BA2D1D6C920078FF65 /* README.md */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -386,9 +400,9 @@
 		20380E1C0E98F7331B4FC17C /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				357321C12D1EA5950078FF65 /* AboutDialog.h */,
 				48F155E4CA3DB360BCB3324D /* angel_concert.png */,
 				A41A57BB09F53B5DD0B79D8F /* angel_concert.icns */,
-				CAA898EE74DE0BF71767CC50 /* README.md */,
 				1D79C73DD5938FEB74A2E509 /* PluginProcessor.cpp */,
 				7578537DDFC30885A6B2C4D9 /* PluginProcessor.h */,
 				B8BAC5852B345AB1D95DE8D3 /* PluginEditor.cpp */,
@@ -463,10 +477,6 @@
 		8C2FECF76346E8C1451EE53B /* CsoundVST3 */ = {
 			isa = PBXGroup;
 			children = (
-				355010F22D1D6ABE0029B2E7 /* CsoundVST3.csd */,
-				355010F32D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd */,
-				355010F42D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd */,
-				355010F52D1D6ABE0029B2E7 /* Xanadu.csd */,
 				20380E1C0E98F7331B4FC17C /* Source */,
 			);
 			name = CsoundVST3;
@@ -783,6 +793,8 @@
 				355010D82D1CA5920029B2E7 /* Icon.icns in Resources */,
 				355010F62D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */,
 				355010F72D1D6ABE0029B2E7 /* Xanadu.csd in Resources */,
+				357321BB2D1D6C920078FF65 /* LICENSE in Resources */,
+				357321BC2D1D6C920078FF65 /* README.md in Resources */,
 				355010F82D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */,
 				355010F92D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */,
 			);
@@ -796,6 +808,8 @@
 				355010C72D1CA5920029B2E7 /* Icon.icns in Resources */,
 				355010FE2D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */,
 				355010FF2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */,
+				357321BF2D1D6C920078FF65 /* LICENSE in Resources */,
+				357321C02D1D6C920078FF65 /* README.md in Resources */,
 				355011002D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */,
 				355011012D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */,
 			);
@@ -809,6 +823,8 @@
 				44E8016A437BCD6FCFDBB69D /* Icon.icns in Resources */,
 				355010FA2D1D6ABE0029B2E7 /* CsoundVST3.csd in Resources */,
 				355010FB2D1D6ABE0029B2E7 /* Xanadu.csd in Resources */,
+				357321BD2D1D6C920078FF65 /* LICENSE in Resources */,
+				357321BE2D1D6C920078FF65 /* README.md in Resources */,
 				355010FC2D1D6ABE0029B2E7 /* CsoundVST3AudioIn.csd in Resources */,
 				355010FD2D1D6ABE0029B2E7 /* CsoundVST3MidiOut.csd in Resources */,
 			);

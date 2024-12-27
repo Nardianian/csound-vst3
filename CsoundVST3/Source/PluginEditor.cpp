@@ -57,7 +57,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     verticalLayout.setItemLayout(2, -0.1, -0.9, -0.5); // Bottom window
     addAndMakeVisible(divider);
     codeEditor.loadContent(audioProcessor.csd);
-
+    
     // Listen for changes from the processor
     audioProcessor.addChangeListener(this);
     startTimer(100);
