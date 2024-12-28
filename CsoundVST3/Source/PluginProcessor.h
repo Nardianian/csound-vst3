@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "csound_threaded.hpp"
+#include "spsc.h"
 
 #include <iostream>
 #include <numeric> // For std::accumulate

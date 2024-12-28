@@ -4,10 +4,14 @@
 #include <csignal>
 
 /**
+ * Enable this to log behavior of FIFOs.
+ */
+constexpr bool fifo_debug = false;
+
+/**
  * Permits a programmer to set a breakpoint in order to pause when
  * ThreadSanitiizer issues a report.
  */
-
 extern "C" void __tsan_on_report() {
     std::raise(SIGTRAP);
     std::fprintf(stderr, "__tsan_on_report\n");
@@ -163,12 +167,15 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
             if ((0x80 <= status) && (status <= 0xE0))
             {
 #if defined(JUCE_DEBUG)
-                ///assert(message.plugin_frame >= processor->csound_block_begin && message.plugin_frame < processor->csound_block_end);
-                auto tyme = message.plugin_frame / float(processor->getSampleRate());
-
-                std::snprintf(buffer, sizeof(buffer),
-                              "Plugin midiRead   #%5lld: time:%9.4f cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end  %8llu  %s", message.sequence, tyme, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
-                DBG(buffer);
+                if (fifo_debug == true)
+                {
+                    ///assert(message.plugin_frame >= processor->csound_block_begin && message.plugin_frame < processor->csound_block_end);
+                    auto tyme = message.plugin_frame / float(processor->getSampleRate());
+                    
+                    std::snprintf(buffer, sizeof(buffer),
+                                  "Plugin midiRead   #%5lld: time:%9.4f cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end  %8llu  %s", message.sequence, tyme, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
+                    DBG(buffer);
+                }
 #endif
                 for (int i = 0; i < size; ++i, ++bytes_read)
                 {
@@ -186,9 +193,12 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
         else
         {
 #if defined(JUCE_DEBUG)
-            std::snprintf(buffer, sizeof(buffer),
-                          " > end midiRead   #%5lld: cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end%8llu  %s", message.sequence, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
-            /// DBG(buffer);
+            if (fifo_debug == true)
+            {
+                std::snprintf(buffer, sizeof(buffer),
+                              " > end midiRead   #%5lld: cs begin  %8llu plugin%8llu msg%8llu cs%8llu cs end%8llu  %s", message.sequence, processor->csound_block_begin, processor->plugin_frame, message.plugin_frame, message.csound_frame, processor->csound_block_end, message.message.getDescription().toRawUTF8());
+                DBG(buffer);
+            }
 #endif
             return bytes_read;
         }
@@ -483,14 +493,17 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
         if ((0x80 <= status) && (status <= 0xE0))        {
              midi_input_fifo.push_back(channel_message);
 #if defined(JUCE_DEBUG)
-            input_messages++;
-            char buffer[0x200];
-            // The channel message frame must be in [host_block_begin, host_block_end).
-            auto tyme = plugin_frame / float(csound.GetSr());
-            assert(channel_message.plugin_frame >= host_block_begin && channel_message.plugin_frame < host_block_end);
-            std::snprintf(buffer, sizeof(buffer),
-                          "Host processBlock #%5lld: time:%9.4f host begin%8llu plugin%8llu msg%8llu cs%8llu host end%8llu  %s", channel_message.sequence, tyme, host_block_begin, plugin_frame, channel_message.plugin_frame, channel_message.csound_frame, host_block_end, message.getDescription().toRawUTF8());
-            /// DBG(buffer);
+            if (fifo_debug == true)
+            {
+                input_messages++;
+                char buffer[0x200];
+                // The channel message frame must be in [host_block_begin, host_block_end).
+                auto tyme = plugin_frame / float(csound.GetSr());
+                assert(channel_message.plugin_frame >= host_block_begin && channel_message.plugin_frame < host_block_end);
+                std::snprintf(buffer, sizeof(buffer),
+                              "Host processBlock #%5lld: time:%9.4f host begin%8llu plugin%8llu msg%8llu cs%8llu host end%8llu  %s", channel_message.sequence, tyme, host_block_begin, plugin_frame, channel_message.plugin_frame, channel_message.csound_frame, host_block_end, message.getDescription().toRawUTF8());
+                DBG(buffer);
+            }
 #endif
         }
     }
@@ -552,11 +565,14 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             host_midi_buffer.addEvent(message.message, int(timestamp));
             midi_output_fifo.pop_front();
 #if defined(JUCE_DEBUG)
-            output_messages++;
-            char buffer[0x200];
-            std::snprintf(buffer, sizeof(buffer),
-            "MIDI output to host#%5d: frame%8llu timestamp%8llu csound: begin%8llu frame %8llu %8llu end%8llu %s", output_messages, plugin_frame, timestamp, csound_block_begin, plugin_frame, csound_frame, csound_block_end, message.message.getDescription().toRawUTF8());
-            /// DBG(buffer);
+            if (fifo_debug == true)
+            {
+                output_messages++;
+                char buffer[0x200];
+                std::snprintf(buffer, sizeof(buffer),
+                              "MIDI output to host#%5d: frame%8llu timestamp%8llu csound: begin%8llu frame %8llu %8llu end%8llu %s", output_messages, plugin_frame, timestamp, csound_block_begin, plugin_frame, csound_frame, csound_block_end, message.message.getDescription().toRawUTF8());
+                DBG(buffer);
+            }
 #endif
         }
         else
