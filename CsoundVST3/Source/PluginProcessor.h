@@ -10,7 +10,7 @@
 
 #include <JuceHeader.h>
 #include "csound_threaded.hpp"
-#include "spsc.h"
+#include "readerwriterqueue.h"
 
 #include <iostream>
 #include <numeric> // For std::accumulate
@@ -121,17 +121,13 @@ private:
     int64_t midi_input_sequence;
 
     // Intermediate FIFOs simplify keeping track of overlapping or incomplete 
-    // blocks of sample frames. These are used only by the processBlock
-    // thread, so are thread-safe.
-    std::deque<MidiChannelMessage> midi_input_fifo;
-    std::deque<double> audio_input_fifo;
-    std::deque<MidiChannelMessage> midi_output_fifo;
-    std::deque<double> audio_output_fifo;
+    // blocks of sample frames.
+    moodycamel::ReaderWriterQueue<MidiChannelMessage> midi_input_fifo;
+    moodycamel::ReaderWriterQueue<double> audio_input_fifo;
+    moodycamel::ReaderWriterQueue<MidiChannelMessage> midi_output_fifo;
+    moodycamel::ReaderWriterQueue<double> audio_output_fifo;
 public:
-    // This FIFO is used by both the processBlock thread and the user
-    // interface thread, so it needs to be thread-safe.
-    std::deque<juce::String> csound_messages_fifo;
-    std::mutex csound_messages_mutex;
+    moodycamel::ReaderWriterQueue<juce::String> csound_messages_fifo;
 
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (CsoundVST3AudioProcessor)

@@ -194,12 +194,9 @@ void CsoundVST3AudioProcessorEditor::changeListenerCallback(juce::ChangeBroadcas
 
 void CsoundVST3AudioProcessorEditor::timerCallback()
 {
-    std::lock_guard<std::mutex> lock(audioProcessor.csound_messages_mutex);
-    while (audioProcessor.csound_messages_fifo.empty() == false)
+    while (auto message = audioProcessor.csound_messages_fifo.peek())
     {
-        juce::String message = audioProcessor.csound_messages_fifo.front();
-        audioProcessor.csound_messages_fifo.pop_front();
-        messageLog.moveCaretToEnd(false);
-        messageLog.insertTextAtCaret(message);
+        messageLog.insertTextAtCaret(*message);
+        audioProcessor.csound_messages_fifo.pop();
     }
 }
