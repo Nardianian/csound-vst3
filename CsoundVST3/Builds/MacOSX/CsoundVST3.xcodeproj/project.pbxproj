@@ -228,7 +228,6 @@
 		357321B92D1D6C920078FF65 /* LICENSE */ = {isa = PBXFileReference; lastKnownFileType = text; name = LICENSE; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Resources/LICENSE"; sourceTree = "<absolute>"; };
 		357321BA2D1D6C920078FF65 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; name = README.md; path = "/Users/michaelgogins/csound-vst3/README.md"; sourceTree = "<absolute>"; };
 		357321C12D1EA5950078FF65 /* AboutDialog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AboutDialog.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/AboutDialog.h"; sourceTree = "<absolute>"; };
-		35D589D92D1FF9AA0030B241 /* spsc.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = spsc.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/spsc.h"; sourceTree = "<absolute>"; };
 		37A573A6007B8058CE53AAB6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38EA8921B126358B8821C4B1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		3A9326F73BE65FABFC828D60 /* Info-AU.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-AU.plist"; sourceTree = SOURCE_ROOT; };
@@ -471,7 +470,6 @@
 				3305FF3002C7F8FD75D720FB /* Frameworks */,
 				AEFD6C97D9D67508E805E33F /* Products */,
 				355010E82D1CA5920029B2E7 /* Recovered References */,
-				35D589D92D1FF9AA0030B241 /* spsc.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";

@@ -1,6 +1,6 @@
-# CsoundVST3
-## By Michael Gogins
-## https://michaelgogins.tumblr.com
+CsoundVST3
+By Michael Gogins
+https://michaelgogins.tumblr.com
 
 All music and examples herein are licensed under the Creative Commons 
 Attribution-NonCommercial-ShareAlike 4.0 International License  
@@ -18,7 +18,7 @@ full-featured VST3 plugin version of Csound. _However, CsoundVST3 enables
 editing .csd text directly within DAW projects._ In many cases, this can 
 greatly simplify and speed up the user's workflow.
 
-## Introduction
+Introduction
 
 CsoundVST3 enables the Csound audio programming language (https://csound.com/) 
 to be used within digital audio workstations as a VST3 plugin instrument 
@@ -31,19 +31,19 @@ score time is synchronized with the DAW's playback time, which can loop. This
 enables using Csound score events embedded in the .csd file to play in sync 
 with the DAW's playback head. And that, in turn, brings _all_ of the technical 
 resources of electroacoustic music, or computer music, or whatever you want 
-to call it, into the DAW.
+to call it, into digital audio workstations.
 
 CsoundVST3 has _all_ the power of command-line Csound. CsoundVST3 can read and 
 write on the user's filesystem, load plugin opcodes, and execute system 
 commands.
 
-CsoundVST3's GUI does _not_ provide user-defined widgets for controlling the 
-Csound orchestra. However, such controls can be implemented in the DAW using 
-MIDI control change messages.
+CsoundVST3's GUI does _not_ provide (as Cabbage does) user-defined widgets for 
+controlling the Csound orchestra. However, such controls can be implemented in 
+the DAW using MIDI control change messages.
 
 Please log any bug reports or feature requests as a GitHub issue.
 
-## Installation
+Installation
 
 Download the installation archive from https://github.com/gogins/csound-vst3 
 and unzip it.
@@ -55,7 +55,7 @@ directory. For example, on macOS, that would normally end up as
 To use the standalone version of CsoundVST3, copy CsoundvST3.app to your 
 computer's Applications folder.
 
-## Usage
+Usage
 
  1. Write a Csound .csd file that optionally outputs stereo audio, optionally 
     accepts stereo audio input, optionally accepts MIDI channel messages, and 
@@ -115,7 +115,13 @@ If you need something like presets, you can map MIDI controllers to Csound
 control variables in your csd, and then you can save the state of your MIDI 
 controllers in your DAW project.
 
-## Release notes for version 1.0beta
+Release Notes 
+
+Version 1.0.1-beta
+
+Internal audio and MIDI queues are now lock-free for more stable performance.
+
+Version 1.0.0-beta
 
 This is the initial release.
 

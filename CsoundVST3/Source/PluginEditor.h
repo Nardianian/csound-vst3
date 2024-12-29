@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "csoundvst3_version.h"
 
 class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor,
 public juce::Button::Listener,

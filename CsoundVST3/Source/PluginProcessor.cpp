@@ -23,7 +23,12 @@ CsoundVST3AudioProcessor::CsoundVST3AudioProcessor()
      : AudioProcessor (BusesProperties()
                         .withInput  ("Input",  juce::AudioChannelSet::stereo(), true)
                         .withOutput ("Output", juce::AudioChannelSet::stereo(), true)
-                        )
+                        ),
+midi_input_fifo(65536),
+audio_input_fifo(65536),
+midi_output_fifo(65536),
+audio_output_fifo(65536),
+csound_messages_fifo(65536)
 {
 }
 
@@ -582,7 +587,7 @@ void CsoundVST3AudioProcessor::processBlock (juce::AudioBuffer<float>& host_audi
             }
             else
             {
-                DBG("processBlock: Oops, audio output FIFO is empty!");
+                DBG("processBlock: WARNING! Audio output FIFO is empty but shouldn't be!");
             }
         }
     }

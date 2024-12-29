@@ -6,11 +6,11 @@ csoundoutput bounds(10, 100, 580, 180) channel("csoundoutput10001")
 </Cabbage>
 <CsoundSynthesizer>
   <CsOptions>
-  -m162 -+rtmidi=NULL -M0 -d --midi-key=4 --midi-velocity=5
+  -m163 -M0 -d --midi-key=4 --midi-velocity=5 --daemon
   </CsOptions>
   <CsInstruments>
   sr = 48000
-  ksmps = 100
+  ksmps = 128
   nchnls = 2
   0dbfs = 3
   

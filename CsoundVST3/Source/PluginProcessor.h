@@ -1,19 +1,12 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin processor.
-
-  ==============================================================================
-*/
-
 #pragma once
 
 #include <JuceHeader.h>
 #include "csound_threaded.hpp"
 #include "readerwriterqueue.h"
+#include "csoundvst3_version.h"
 
 #include <iostream>
-#include <numeric> // For std::accumulate
+#include <numeric>
 
 class MidiChannelMessage
 {
@@ -92,9 +85,16 @@ public:
     juce::PluginHostType plugin_host_type;
 
 private:
+    /**
+     * Amplitude corresponding to zero decibels full scale.
+     */
     double odbfs;
+    /**
+     * Ampltude corresponding to one over zero decibels full scale.
+     */
     double iodbfs;
     
+    // These are valid after prepareToPlay.
     int host_input_channels;
     int host_output_channels;
     int host_channels;
@@ -109,6 +109,7 @@ private:
     int64_t host_block_frame;
     int64_t host_audio_buffer_frame;
     int64_t host_prior_frame;
+    
     // Set to 0 in prepareToPlay, incremented in processBlock.
     int64_t plugin_frame;
     
@@ -120,13 +121,16 @@ private:
     int64_t host_block_end;
     int64_t midi_input_sequence;
 
-    // Intermediate FIFOs simplify keeping track of overlapping or incomplete 
-    // blocks of sample frames.
+    // These intermediate FIFOs simplify synchronizing overlapping or 
+    // incomplete blocks of sample frames.
     moodycamel::ReaderWriterQueue<MidiChannelMessage> midi_input_fifo;
     moodycamel::ReaderWriterQueue<double> audio_input_fifo;
     moodycamel::ReaderWriterQueue<MidiChannelMessage> midi_output_fifo;
     moodycamel::ReaderWriterQueue<double> audio_output_fifo;
 public:
+    /**
+     * Enables efficient asynchronous updating of the Csound message display.
+     */
     moodycamel::ReaderWriterQueue<juce::String> csound_messages_fifo;
 
     //==============================================================================
