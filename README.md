@@ -1,6 +1,6 @@
 # CsoundVST3
-### By Michael Gogins
-### https://michaelgogins.tumblr.com
+## By Michael Gogins
+## https://michaelgogins.tumblr.com
 
 All music and examples herein are licensed under the Creative Commons 
 Attribution-NonCommercial-ShareAlike 4.0 International License  

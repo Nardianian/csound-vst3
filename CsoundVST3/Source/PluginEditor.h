@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "CsoundTokeniser.h"
 #include "csoundvst3_version.h"
 
 class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor,
@@ -18,42 +19,39 @@ public juce::ChangeListener,
 public juce::Timer
 // public juce::TooltipWindow
 {
-public:
+    public:
     CsoundVST3AudioProcessorEditor (CsoundVST3AudioProcessor&);
     ~CsoundVST3AudioProcessorEditor() override;
-
+    
     //==============================================================================
     void paint (juce::Graphics&) override;
     void resized() override;
     void changeListenerCallback(juce::ChangeBroadcaster*) override;
     void timerCallback() override;
-private:
+    private:
     CsoundVST3AudioProcessor& audioProcessor;
     juce::CodeDocument csd_document;
     juce::CodeDocument messages_document;
-
+    
     juce::TextButton openButton{"Open..."};
     juce::TextButton saveButton{"Save"};
     juce::TextButton saveAsButton{"Save as..."};
     juce::TextButton playButton{"Play"};
     juce::TextButton stopButton{"Stop"};
     juce::TextButton aboutButton{"About"};
-
+    
     juce::Label statusBar;
     juce::StretchableLayoutManager verticalLayout;
     juce::StretchableLayoutResizerBar divider;
     
-    
-public:
-    juce::CodeEditorComponent codeEditor;
-    juce::CodeEditorComponent messageLog;
+    public:
+    std::unique_ptr<CsoundTokeniser> csd_code_tokeniser;
+    std::unique_ptr<juce::CodeEditorComponent> codeEditor;
+    std::unique_ptr<juce::CodeEditorComponent> messageLog;
 
 private:
     void buttonClicked(juce::Button* button) override;
-    
-
     juce::TooltipWindow tooltipWindow { this }; // Enable tooltips
-
     std::unique_ptr<juce::FileChooser> fileChooser;
     juce::File csd_file;
     

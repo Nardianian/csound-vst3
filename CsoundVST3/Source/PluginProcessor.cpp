@@ -274,7 +274,7 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
     if (editor)
     {
         auto pluginEditor = reinterpret_cast<CsoundVST3AudioProcessorEditor *>(editor);
-        pluginEditor->messageLog.loadContent("");
+        pluginEditor->messageLog->loadContent("");
 
     }
     csoundMessage("CsoundVST3AudioProcessor::prepareToPlay...\n");
@@ -625,7 +625,7 @@ void CsoundVST3AudioProcessor::setStateInformation (const void* data, int sizeIn
         auto editor = getActiveEditor();
         if (editor) {
             auto pluginEditor = reinterpret_cast<CsoundVST3AudioProcessorEditor *>(editor);
-            pluginEditor->codeEditor.loadContent(csd);
+            pluginEditor->codeEditor->loadContent(csd);
         }
     }
 }

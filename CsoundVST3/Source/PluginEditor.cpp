@@ -1,21 +1,14 @@
-/*
-  ==============================================================================
-
-    This file contains the basic framework code for a JUCE plugin editor.
-
-  ==============================================================================
-*/
-
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 #include "AboutDialog.h"
+#include "CsoundTokeniser.h"
 #include "csound_threaded.hpp"
 
 
 //==============================================================================
 CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p),
-    divider(&verticalLayout, 1, false), codeEditor(csd_document, nullptr), messageLog(messages_document, nullptr)
+    divider(&verticalLayout, 1, false)
 {
     Csound csound;
     // Menu Bar Buttons
@@ -40,23 +33,27 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     addAndMakeVisible(statusBar);
 
     // Code Editor
-    addAndMakeVisible(codeEditor);
-    codeEditor.setReadOnly(false);
-    codeEditor.setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkslategrey);
-    codeEditor.setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::seashell);
+    csd_code_tokeniser = std::make_unique<CsoundTokeniser>();
+    codeEditor = std::make_unique<juce::CodeEditorComponent>(csd_document, csd_code_tokeniser.get());
+    addAndMakeVisible(*codeEditor);
+    codeEditor->setReadOnly(false);
+    //codeEditor.set
+    codeEditor->setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkslategrey);
+    codeEditor->setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::seashell);
 
     // Message Log
-    addAndMakeVisible(messageLog);
-    messageLog.setReadOnly(true);
-    messageLog.setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::black);
-    messageLog.setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::lightgreen);
+    messageLog = std::make_unique<juce::CodeEditorComponent>(messages_document, nullptr);
+    addAndMakeVisible(*messageLog);
+    messageLog->setReadOnly(true);
+    messageLog->setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::black);
+    messageLog->setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::lightgreen);
 
     // Vertical Layout
     verticalLayout.setItemLayout(0, -0.1, -0.9, -0.5); // Top window
     verticalLayout.setItemLayout(1, 8, 8, 8);          // Divider
     verticalLayout.setItemLayout(2, -0.1, -0.9, -0.5); // Bottom window
     addAndMakeVisible(divider);
-    codeEditor.loadContent(audioProcessor.csd);
+    codeEditor->loadContent(audioProcessor.csd);
     
     // Listen for changes from the processor
     audioProcessor.addChangeListener(this);
@@ -101,10 +98,10 @@ void CsoundVST3AudioProcessorEditor::resized()
     auto statusBarHeight = 20;
     statusBar.setBounds(bounds.removeFromBottom(statusBarHeight));
 
-    juce::Component *components[] = {&codeEditor, &divider, &messageLog};
+    juce::Component *components[] = {codeEditor.get(), &divider, messageLog.get()};
     verticalLayout.layOutComponents(components, 3, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight(), true, true) ;
     setWantsKeyboardFocus(true);
-    messageLog.setReadOnly(false);
+    messageLog->setReadOnly(false);
  }
 
 void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
@@ -123,7 +120,7 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
             if (csd_file.existsAsFile())
             {
                 audioProcessor.csd = csd_file.loadFileAsString();
-                codeEditor.loadContent(audioProcessor.csd);
+                codeEditor->loadContent(audioProcessor.csd);
                 statusBar.setText("Csd loaded.", juce::dontSendNotification);
            }
             else
@@ -135,7 +132,7 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
     }
     else if (button == &saveButton)
     {
-        audioProcessor.csd = codeEditor.getDocument().getAllContent();
+        audioProcessor.csd = codeEditor->getDocument().getAllContent();
         statusBar.setText("Saved", juce::dontSendNotification);
     }
     else if (button == &saveAsButton)
@@ -150,7 +147,7 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
                 juce::File selectedFile = chooser.getResult();
                 if (selectedFile.create().wasOk())
                 {
-                    audioProcessor.csd = codeEditor.getDocument().getAllContent();
+                    audioProcessor.csd = codeEditor->getDocument().getAllContent();
                     if (selectedFile.replaceWithText(audioProcessor.csd))
                     {
                         DBG("File saved successfully: " << selectedFile.getFullPathName());
@@ -196,7 +193,7 @@ void CsoundVST3AudioProcessorEditor::timerCallback()
 {
     while (auto message = audioProcessor.csound_messages_fifo.peek())
     {
-        messageLog.insertTextAtCaret(*message);
+        messageLog->insertTextAtCaret(*message);
         audioProcessor.csound_messages_fifo.pop();
     }
 }
