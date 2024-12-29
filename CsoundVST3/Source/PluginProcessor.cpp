@@ -1,5 +1,6 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include "csoundvst3_version.h"
 #include <cassert>
 #include <csignal>
 
@@ -39,7 +40,10 @@ CsoundVST3AudioProcessor::~CsoundVST3AudioProcessor()
 //==============================================================================
 const juce::String CsoundVST3AudioProcessor::getName() const
 {
-    return JucePlugin_Name;
+    juce::String plugin_name = JucePlugin_Name;
+    plugin_name += " v";
+    plugin_name += CSOUNDVST3_VERSION;
+    return plugin_name;
 }
 
 bool CsoundVST3AudioProcessor::acceptsMidi() const
@@ -158,7 +162,7 @@ int CsoundVST3AudioProcessor::midiRead(CSOUND *csound_, void *userData, unsigned
         {
             break;
         }
-        // Pop messages for the pending Csound block before skipping later messages.
+        // Skipping later messages.
         if (message->plugin_frame >= processor->csound_block_end)
         {
             break;
@@ -409,10 +413,8 @@ void CsoundVST3AudioProcessor::prepareToPlay (double sampleRate, int samplesPerB
  * and may not be the same on every call. Input data in the host's  buffers is
  * replaced by output data, or cleared.
  *
- * This implementation uses FIFOs based on std::deque, which is suitable
- * as this implementation is single-threaded so does not need synchronization
- * bettween threads,  and needs to peek at the front elements of the MIDI
- * FIFOs.
+ * This implementation uses MoodyCamel's ReaderWriterQueue as FIFOs
+ * for synchronizing these potential mismatches.
  *
  * In each processBlock call,, the incoming buffers  first have their data
  * pushed onto midi_input_fifo and audio_input_fifo., after which the host's
