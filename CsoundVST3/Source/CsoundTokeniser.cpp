@@ -7,13 +7,13 @@ std::set<std::string> csound_keywords;
 /// const juce::StringArray csoundOpcodes = { "oscil", "adsr", "reverb" };
 
 CsoundTokeniser::CsoundTokeniser() {
-    csd_color_scheme.set("Keyword", juce::Colours::lightblue);
+    csd_color_scheme.set("Keyword", juce::Colours::white);
     /// csd_color_scheme.set("Opcode", juce::Colours::purple);
-    csd_color_scheme.set("Number", juce::Colours::orange);
-    csd_color_scheme.set("String", juce::Colours::lightgreen);
-    csd_color_scheme.set("Comment", juce::Colours::grey);
-    csd_color_scheme.set("Identifier", juce::Colours::antiquewhite);
-    csd_color_scheme.set("Other", juce::Colours::darkred);
+    csd_color_scheme.set("Number", juce::Colours::lightcoral);
+    csd_color_scheme.set("String", juce::Colours::mediumaquamarine);
+    csd_color_scheme.set("Comment", juce::Colours::lightgreen);
+    csd_color_scheme.set("Identifier", juce::Colours::powderblue);
+    csd_color_scheme.set("Other", juce::Colours::wheat);
     for (int i = 0; ; ++i)
     {
         const char *keyword = csd_ids[i];
@@ -37,7 +37,40 @@ int CsoundTokeniser::readNextToken(juce::CodeDocument::Iterator& source)
             source.skip();
         return CsoundComment;
     }
-
+    if (startChar == '/')
+    {
+        auto result = CsoundOther;
+        source.skip();
+        if (source.peekNextChar() == '=')
+        {
+            source.skip();
+        }
+        else if (source.peekNextChar() == '/')
+        {
+            result = CsoundComment;
+            source.skipToEndOfLine();
+        }
+        else if (source.peekNextChar() == '*')
+        {
+            source.skip();
+            result = CsoundComment;
+            bool lastWasStar = false;
+            
+            for (;;)
+            {
+                const juce::juce_wchar c = source.nextChar();
+                
+                if (c == 0 || (c == '/' && lastWasStar))
+                    break;
+                
+                lastWasStar = (c == '*');
+            }
+        }
+        if (result == CsoundComment)
+        {
+            return result;
+        }
+    }
     // Handle strings
     if (startChar == '"')
     {
@@ -47,7 +80,6 @@ int CsoundTokeniser::readNextToken(juce::CodeDocument::Iterator& source)
         source.skip(); // Skip closing quote
         return CsoundString;
     }
-
     // Handle numbers
     if (juce::CharacterFunctions::isDigit(startChar) || startChar == '.')
     {
@@ -55,22 +87,18 @@ int CsoundTokeniser::readNextToken(juce::CodeDocument::Iterator& source)
             source.skip();
         return CsoundNumber;
     }
-
     // Handle identifiers and keywords
     if (juce::CharacterFunctions::isLetter(startChar))
     {
         juce::String token;
         while (juce::CharacterFunctions::isLetterOrDigit(source.peekNextChar()) || source.peekNextChar() == '_')
             token += source.nextChar();
-
         if (csound_keywords.contains(token.toRawUTF8()))
             return CsoundKeyword;
         ///if (csoundOpcodes.contains(token))
         ///    return CsoundOpcode;
-
         return CsoundIdentifier;
     }
-
     // Skip unrecognized characters
     source.skip();
     return CsoundOther;
@@ -80,7 +108,6 @@ juce::CodeEditorComponent::ColourScheme CsoundTokeniser::getDefaultColourScheme(
 {
     return csd_color_scheme;
 }
-
 
 juce::StringArray CsoundTokeniser::getTokenTypes()
 {
