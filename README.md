@@ -117,6 +117,10 @@ controllers in your DAW project.
 
 ## Release Notes 
 
+### Version 1.0.2-beta
+
+Basic Csound syntax highlighting has been added.
+
 ### Version 1.0.1-beta
 
 Internal audio and MIDI queues are now lock-free for more stable performance.
