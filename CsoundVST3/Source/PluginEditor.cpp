@@ -3,6 +3,7 @@
 #include "AboutDialog.h"
 #include "CsoundTokeniser.h"
 #include "csound_threaded.hpp"
+#include "csd_ids.h"
 
 
 //==============================================================================

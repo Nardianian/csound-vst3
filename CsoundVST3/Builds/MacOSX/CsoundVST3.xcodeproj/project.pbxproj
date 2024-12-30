@@ -234,6 +234,7 @@
 		35977E5A2D216F4300EA2B9D /* CsoundTokeniser.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = CsoundTokeniser.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/CsoundTokeniser.h"; sourceTree = "<absolute>"; };
 		35977E5B2D216F4300EA2B9D /* csoundvst3_version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = csoundvst3_version.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/csoundvst3_version.h"; sourceTree = "<absolute>"; };
 		35977E5C2D216F4300EA2B9D /* readerwriterqueue.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = readerwriterqueue.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/readerwriterqueue.h"; sourceTree = "<absolute>"; };
+		35977E5D2D22A24600EA2B9D /* csd_ids.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = csd_ids.h; path = "/Users/michaelgogins/csound-vst3/CsoundVST3/Source/csd_ids.h"; sourceTree = "<absolute>"; };
 		37A573A6007B8058CE53AAB6 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		38EA8921B126358B8821C4B1 /* WebKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WebKit.framework; path = System/Library/Frameworks/WebKit.framework; sourceTree = SDKROOT; };
 		3A9326F73BE65FABFC828D60 /* Info-AU.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Info-AU.plist"; sourceTree = SOURCE_ROOT; };
@@ -413,11 +414,12 @@
 				7578537DDFC30885A6B2C4D9 /* PluginProcessor.h */,
 				B8BAC5852B345AB1D95DE8D3 /* PluginEditor.cpp */,
 				F9E6369806E442E03F6CB5D5 /* PluginEditor.h */,
-				35977E592D216F4300EA2B9D /* atomicops.h */,
+				35977E5D2D22A24600EA2B9D /* csd_ids.h */,
+				35977E572D216EB900EA2B9D /* CsoundTokeniser.cpp */,
 				35977E5A2D216F4300EA2B9D /* CsoundTokeniser.h */,
 				35977E5B2D216F4300EA2B9D /* csoundvst3_version.h */,
 				35977E5C2D216F4300EA2B9D /* readerwriterqueue.h */,
-				35977E572D216EB900EA2B9D /* CsoundTokeniser.cpp */,
+				35977E592D216F4300EA2B9D /* atomicops.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
