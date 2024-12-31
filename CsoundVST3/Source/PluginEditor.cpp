@@ -38,6 +38,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     codeEditor = std::make_unique<juce::CodeEditorComponent>(csd_document, csd_code_tokeniser.get());
     addAndMakeVisible(*codeEditor);
     codeEditor->setReadOnly(false);
+    attachContextMenuToCodeEditor(*codeEditor);
     //codeEditor.set
     codeEditor->setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkslategrey);
     codeEditor->setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::seashell);
