@@ -117,6 +117,10 @@ controllers in your DAW project.
 
 ## Release Notes 
 
+### Version 1.0.3-beta
+
+A basic search and replace function has been added.
+
 ### Version 1.0.2-beta
 
 Basic Csound syntax highlighting has been added.

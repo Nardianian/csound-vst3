@@ -18,6 +18,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     addAndMakeVisible(saveAsButton);
     addAndMakeVisible(playButton);
     addAndMakeVisible(stopButton);
+    addAndMakeVisible(findButton);
     addAndMakeVisible(aboutButton);
 
     // Attach listeners
@@ -26,6 +27,7 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     saveAsButton.addListener(this);
     playButton.addListener(this);
     stopButton.addListener(this);
+    findButton.addListener(this);
     aboutButton.addListener(this);
 
     // Status Bar
@@ -38,8 +40,6 @@ CsoundVST3AudioProcessorEditor::CsoundVST3AudioProcessorEditor (CsoundVST3AudioP
     codeEditor = std::make_unique<juce::CodeEditorComponent>(csd_document, csd_code_tokeniser.get());
     addAndMakeVisible(*codeEditor);
     codeEditor->setReadOnly(false);
-    attachContextMenuToCodeEditor(*codeEditor);
-    //codeEditor.set
     codeEditor->setColour(juce::CodeEditorComponent::backgroundColourId, juce::Colours::darkslategrey);
     codeEditor->setColour(juce::CodeEditorComponent::defaultTextColourId, juce::Colours::seashell);
 
@@ -81,6 +81,7 @@ void CsoundVST3AudioProcessorEditor::paint (juce::Graphics& g)
 void CsoundVST3AudioProcessorEditor::resized()
 {
     auto bounds = getLocalBounds();
+    
     // Menu Bar
     auto menuBar = bounds.removeFromTop(30);
     openButton.setBounds(menuBar.removeFromLeft(80));
@@ -93,6 +94,8 @@ void CsoundVST3AudioProcessorEditor::resized()
     playButton.setTooltip("Stop Csound, compile the .csd, and start the performance");
     stopButton.setBounds(menuBar.removeFromLeft(80));
     stopButton.setTooltip("Stop the Csound performance");
+    findButton.setBounds(menuBar.removeFromLeft(80));
+    findButton.setTooltip("Search and replace...");
     aboutButton.setBounds(menuBar.removeFromLeft(100));
     aboutButton.setTooltip("About CsoundVST3");
 
@@ -179,6 +182,13 @@ void CsoundVST3AudioProcessorEditor::buttonClicked(juce::Button* button)
         statusBar.setText("Stop...", juce::dontSendNotification);
         juce::MessageManagerLock lock;
         audioProcessor.stop();
+    }
+    else if (button == &findButton)
+    {
+        //auto* dialog = new juce::DialogWindow("Search and Replace", juce::Colours::darkgrey, true);
+        //dialog->setContentOwned(new SearchAndReplaceDialog(*codeEditor), true);
+        //dialog->centreWithSize(400, 150);
+        juce::DialogWindow::showDialog("Search and Replace", new SearchAndReplaceDialog(*codeEditor), nullptr, juce::Colours::darkgrey, true, false);
     }
     else if (button == &aboutButton)
     {

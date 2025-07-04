@@ -13,6 +13,7 @@
 #include "CsoundTokeniser.h"
 #include "csoundvst3_version.h"
 
+
 class SearchAndReplaceDialog : public juce::Component,
                                private juce::Button::Listener
 {
@@ -38,37 +39,33 @@ public:
         replaceButton.setButtonText("Replace");
         replaceButton.addListener(this);
 
-        addAndMakeVisible(closeButton);
-        closeButton.setButtonText("Close");
-        closeButton.addListener(this);
-
         setSize(400, 150);
     }
 
     void resized() override
     {
         auto bounds = getLocalBounds().reduced(10);
-        auto row = bounds.removeFromTop(30);
+        auto row = bounds.removeFromTop(40);
+        int margin = 8;
 
         searchLabel.setBounds(row.removeFromLeft(70));
-        searchField.setBounds(row);
+        searchField.setBounds(row.reduced(margin));
 
-        row = bounds.removeFromTop(30);
+        row = bounds.removeFromTop(40);
         replaceLabel.setBounds(row.removeFromLeft(70));
-        replaceField.setBounds(row);
+        replaceField.setBounds(row.reduced(margin));
 
-        row = bounds.removeFromTop(30);
-        searchButton.setBounds(row.removeFromLeft(120));
-        replaceButton.setBounds(row.removeFromLeft(120));
-        closeButton.setBounds(row);
-    }
+        row = bounds.removeFromTop(40);
+        replaceButton.setBounds(row.removeFromRight(120).reduced(margin));
+        searchButton.setBounds(row.removeFromRight(120).reduced(margin));
+     }
 
 private:
     juce::CodeEditorComponent& codeEditor;
 
     juce::Label searchLabel, replaceLabel;
     juce::TextEditor searchField, replaceField;
-    juce::TextButton searchButton, replaceButton, closeButton;
+    juce::TextButton searchButton, replaceButton;
 
     void buttonClicked(juce::Button* button) override
     {
@@ -110,47 +107,8 @@ private:
                                                   "Replace", "Text not found.");
             }
         }
-        else if (button == &closeButton)
-        {
-            getParentComponent()->removeChildComponent(this);
-        }
     }
 };
-
-class ContextMenuHandler : public juce::MouseListener
-{
-public:
-    ContextMenuHandler(juce::CodeEditorComponent& editor)
-        : codeEditor(editor)
-    {
-    }
-
-    void mouseUp(const juce::MouseEvent& e) override
-    {
-        if (e.mods.isPopupMenu())
-        {
-            juce::PopupMenu menu;
-            menu.addItem("Search and Replace", [&]()
-            {
-                auto* dialog = new juce::DialogWindow("Search and Replace", juce::Colours::lightgrey, true);
-                dialog->setContentOwned(new SearchAndReplaceDialog(codeEditor), true);
-                dialog->centreWithSize(400, 150);
-                dialog->setVisible(true);
-            });
-            menu.showMenuAsync({});
-           // menu.show(0, 0, 0, 0, nullptr);
-        }
-    }
-
-private:
-    juce::CodeEditorComponent& codeEditor;
-};
-
-inline void attachContextMenuToCodeEditor(juce::CodeEditorComponent& codeEditor)
-{
-    auto* handler = new ContextMenuHandler(codeEditor);
-    codeEditor.addMouseListener(handler, true);
-}
 
 class CsoundVST3AudioProcessorEditor  : public juce::AudioProcessorEditor,
 public juce::Button::Listener,
@@ -177,6 +135,7 @@ public juce::Timer
     juce::TextButton saveAsButton{"Save as..."};
     juce::TextButton playButton{"Play"};
     juce::TextButton stopButton{"Stop"};
+    juce::TextButton findButton{"Find..."};
     juce::TextButton aboutButton{"About"};
     
     juce::Label statusBar;
