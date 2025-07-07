@@ -1,0 +1,3 @@
+[submodule "CsoundVST3/include/JUCE"]
+	path = CsoundVST3/include/JUCE
+	url = https://github.com/juce-framework/JUCE.git

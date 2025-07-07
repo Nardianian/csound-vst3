@@ -43,7 +43,11 @@
 #import <CsoundLib64/csound.hpp>
 %}
 #else
+#ifdef __APPLE__
 #import <CsoundLib64/csound.hpp>
+#else
+#include <csound.hpp>
+#endif
 #ifdef __BUILDING_CSOUND_INTERFACES
 #endif
 
