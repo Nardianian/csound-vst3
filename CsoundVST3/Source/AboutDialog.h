@@ -1,6 +1,6 @@
 #pragma once
 
-#include <juce_audio_processors/juce_audio_processors.h>
+#include <JuceHeader.h>
 #include "csoundvst3_version.h"
 #include <fstream>
 #include <sstream>

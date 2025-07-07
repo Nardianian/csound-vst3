@@ -1,4 +1,4 @@
-#include <juce_audio_processors/juce_audio_processors.h>
+#include <JuceHeader.h>
 #include "CsoundTokeniser.h"
 #include "csd_ids.h"
 

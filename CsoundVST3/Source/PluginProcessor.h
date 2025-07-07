@@ -1,6 +1,6 @@
 #pragma once
 
-#include <juce_audio_processors/juce_audio_processors.h>
+#include <JuceHeader.h>
 #include "csound_threaded.hpp"
 #include "readerwriterqueue.h"
 #include "csoundvst3_version.h"
@@ -8,9 +8,9 @@
 #include <iostream>
 #include <numeric>
 
-#ifndef SIGSTOP
-#define SIGSTOP 5
-#enfig
+#ifndef SIGTRAP
+#define SIGTRAP 5
+#endif
 
 class MidiChannelMessage
 {
