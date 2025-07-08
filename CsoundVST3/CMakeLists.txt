@@ -52,10 +52,10 @@ target_compile_definitions(${TARGET_NAME}
   PRODUCT_NAME_WITHOUT_VERSION="${TARGET_NAME}"
 )
 
+juce_generate_juce_header(${TARGET_NAME})
+
 # ADD FILES
 file(GLOB_RECURSE SOURCE_FILES CONFIGURE_DEPENDS
-  "${CMAKE_CURRENT_SOURCE_DIR}/JuceLibraryCode/*.cpp"
-  "${CMAKE_CURRENT_SOURCE_DIR}/JuceLibraryCode/*.h"
   "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.cpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.hpp"
   "${CMAKE_CURRENT_SOURCE_DIR}/Source/*.h"
@@ -64,7 +64,10 @@ target_sources(${TARGET_NAME} PRIVATE ${SOURCE_FILES})
 
 target_include_directories(${TARGET_NAME}
     PRIVATE
-    "${CMAKE_CURRENT_SOURCE_DIR}/JuceLibraryCode"
+    # point to generated files
+    "${CMAKE_BINARY_DIR}/juce_binarydata_BinaryData/JuceLibraryCode"
+
+    # TODO
     "C:/Program Files/Csound6_x64/include/csound"
     )
 
@@ -95,6 +98,7 @@ target_link_libraries(${TARGET_NAME}
   juce::juce_recommended_lto_flags
   juce::juce_recommended_warning_flags
 
+  # TODO
   "C:/Users/daves/Documents/libsndfile-1.2.2-win64/lib/sndfile.lib"
   "C:/Program Files/Csound6_x64/lib/libcsound64.lib"
 )
