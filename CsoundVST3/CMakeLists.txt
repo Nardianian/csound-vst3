@@ -11,6 +11,50 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(JUCE_ROOT "${CMAKE_SOURCE_DIR}/include/JUCE")
 add_subdirectory(${JUCE_ROOT})
 
+# First, find Csound for non-macOS platforms.
+
+if (NOT APPLE)
+    # Allow the user to specify a custom root path for Csound
+    set(CSOUND_ROOT "" CACHE PATH "Root directory of the Csound installation")
+
+    # Platform-specific hints
+    if(WIN32)
+        set(CSOUND_POSSIBLE_PATHS
+            "${CSOUND_ROOT}"
+            "C:/Program Files/Csound6_x64"
+            "C:/Program Files (x86)/Csound6_x86"
+        )
+    elseif(UNIX)
+        set(CSOUND_POSSIBLE_PATHS
+            "${CSOUND_ROOT}"
+            "/usr"
+            "/usr/local"
+            "/opt"
+        )
+    endif()
+
+    # Find include directory
+    find_path(CSOUND_INCLUDE_DIR
+        NAMES csound/csound.hpp
+        PATH_SUFFIXES include
+        PATHS ${CSOUND_POSSIBLE_PATHS}
+        NO_DEFAULT_PATH
+    )
+
+    # Find library
+    find_library(CSOUND_LIBRARY
+        NAMES csound64 CsoundLib64 csound
+        PATH_SUFFIXES lib
+        PATHS ${CSOUND_POSSIBLE_PATHS}
+        NO_DEFAULT_PATH
+    )
+
+    # Error out if not found
+    if(NOT CSOUND_INCLUDE_DIR OR NOT CSOUND_LIBRARY)
+        message(FATAL_ERROR "Csound library or headers not found. Set CSOUND_ROOT or install Csound.")
+    endif()
+endif()
+
 # Define plugin
 juce_add_plugin(CsoundVST3
     COMPANY_NAME "Irreducible Productions"
@@ -125,11 +169,11 @@ if(APPLE)
 elseif(WIN32)
     include_directories("C:/path/to/csound/include")
     link_directories("C:/path/to/csound/lib")
-    target_link_libraries(CsoundVST3 PRIVATE csound64)
+    target_link_libraries(CsoundVST3 PRIVATE ${CSOUND_LIBRARY})
 elseif(UNIX)
     include_directories("/usr/include/csound" "/opt/homebrew/include/csound")
     link_directories("/usr/lib" "/opt/homebrew/lib")
-    target_link_libraries(CsoundVST3 PRIVATE csound64)
+    target_link_libraries(CsoundVST3 PRIVATE ${CSOUND_LIBRARY})
 endif()
 
 # Code signing for Xcode builds
