@@ -1,49 +1,59 @@
 cmake_minimum_required(VERSION 3.15)
+
 project(CsoundVST3 VERSION 1.0.0)
 
+# Require C++20
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
-# JUCE setup
-set(JUCE_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/include/JUCE")
+# Set JUCE root (update path if necessary)
+set(JUCE_ROOT "${CMAKE_SOURCE_DIR}/include/JUCE")
 add_subdirectory(${JUCE_ROOT})
 
-# Main plugin target
+# Define plugin
 juce_add_plugin(CsoundVST3
     COMPANY_NAME "Irreducible Productions"
     COMPANY_WEBSITE "https://michaelgogins.tumblr.com"
     COMPANY_EMAIL "michael.gogins@gmail.com"
+
     IS_SYNTH TRUE
     IS_MIDI_EFFECT TRUE
     NEEDS_MIDI_INPUT TRUE
+
     FORMATS AU VST3 Standalone
+
     VST3_CATEGORIES "Fx;Instrument"
     AAX_CATEGORY "16"
     AUMAIN_TYPE "aumu"
+
     PLUGIN_MANUFACTURER_CODE IrPr
     PLUGIN_CODE Csv3
     PRODUCT_NAME "CsoundVST3"
     COPY_PLUGIN_AFTER_BUILD TRUE
-    FILES
-        Source/PluginProcessor.cpp
-        Source/PluginEditor.cpp
-        Source/CsoundTokeniser.cpp
-        Source/PluginProcessor.h
-        Source/PluginEditor.h
 )
 
-# Binary resources
-juce_add_binary_data(BinaryData
+juce_add_binary_data(CsoundBinaryData
     SOURCES
         Resources/angel_concert.png
         Resources/angel_concert.icns
+        # Resources/README.md
 )
 
-# Link common libraries and resources
-target_link_libraries(CsoundVST3 PRIVATE
-    BinaryData
+# Add source files
+target_sources(CsoundVST3 PRIVATE
+    Source/PluginProcessor.cpp
+    Source/PluginEditor.cpp
+    Source/CsoundTokeniser.cpp
+)
 
+target_include_directories(CsoundVST3 PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/Source
+)
+
+# JUCE module dependencies
+target_link_libraries(CsoundVST3 PRIVATE 
+    CsoundBinaryData
     juce::juce_audio_basics
     juce::juce_audio_devices
     juce::juce_audio_formats
@@ -58,45 +68,60 @@ target_link_libraries(CsoundVST3 PRIVATE
     juce::juce_gui_extra
 )
 
-# JUCE-specific compile definitions
+# Compile definitions
 target_compile_definitions(CsoundVST3 PRIVATE
     JUCE_STRICT_REFCOUNTEDPOINTER=1
     JUCE_VST3_CAN_REPLACE_VST2=0
 )
 
-# Framework linking and includes
-if(APPLE)
-    set(CSOUND_FRAMEWORK_PATH "/Library/Frameworks")
-    set(CSOUND_FRAMEWORK_NAME "CsoundLib64")
-    set(CSOUND_FRAMEWORK_HEADER_PATH "${CSOUND_FRAMEWORK_PATH}/${CSOUND_FRAMEWORK_NAME}.framework/Headers")
+# Add icon and other resource files
+set(resources
+    Resources/angel_concert.png
+    Resources/angel_concert.icns
+    Resources/README.md
+)
 
-    foreach(tgt CsoundVST3 CsoundVST3_Standalone CsoundVST3_AU CsoundVST3_VST3)
-        if(TARGET ${tgt})
-            target_include_directories(${tgt} PRIVATE "${CSOUND_FRAMEWORK_HEADER_PATH}")
-            target_link_options(${tgt} PRIVATE "-F${CSOUND_FRAMEWORK_PATH}")
-            target_link_libraries(${tgt} PRIVATE "-framework ${CSOUND_FRAMEWORK_NAME}"
-                BinaryData
-                juce::juce_audio_basics
-                juce::juce_audio_devices
-                juce::juce_audio_formats
-                juce::juce_audio_plugin_client
-                juce::juce_audio_processors
-                juce::juce_audio_utils
-                juce::juce_core
-                juce::juce_data_structures
-                juce::juce_events
-                juce::juce_graphics
-                juce::juce_gui_basics
-                juce::juce_gui_extra
+# macOS specific bundle properties
+if(APPLE)
+    # List of plugin format targets to individually set.
+    set(CSOUNDVST3_TARGETS
+        CsoundVST3
+        CsoundVST3_Standalone
+        CsoundVST3_VST3
+        CsoundVST3_AU
+    )
+
+    foreach(target IN LISTS CSOUNDVST3_TARGETS)
+        if(TARGET ${target})
+            target_include_directories(${target} PRIVATE /Library/Frameworks/CsoundLib64.framework/Headers)
+            target_link_libraries(${target} PRIVATE "-framework CsoundLib64")
+            target_link_options(${target} PRIVATE -F/Library/Frameworks)
+        endif()
+    endforeach()
+
+
+    set(resources
+        Resources/angel_concert.png
+        Resources/angel_concert.icns
+    )
+
+    foreach(target IN ITEMS CsoundVST3 CsoundVST3_VST3 CsoundVST3_AU CsoundVST3_Standalone)
+        if(TARGET ${target})
+            set_source_files_properties(Resources/angel_concert.icns PROPERTIES
+                MACOSX_PACKAGE_LOCATION "Resources"
+            )
+            set_target_properties(${target} PROPERTIES
+                MACOSX_BUNDLE TRUE
+                MACOSX_BUNDLE_ICON_FILE angel_concert.icns
+                RESOURCE "${resources}"
             )
         endif()
     endforeach()
-    # macOS app icon
-    set_source_files_properties(Resources/angel_concert.icns PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
-    set_target_properties(CsoundVST3 PROPERTIES
-        MACOSX_BUNDLE_ICON_FILE angel_concert.icns
-        RESOURCE "Resources/angel_concert.icns"
-    )
+
+    # Code signing
+    if(CMAKE_GENERATOR STREQUAL "Xcode")
+        set_xcode_property(CsoundVST3 CODE_SIGN_IDENTITY "@michael_gogins" "ALL")
+    endif()
 elseif(WIN32)
     include_directories("C:/path/to/csound/include")
     link_directories("C:/path/to/csound/lib")
@@ -107,6 +132,21 @@ elseif(UNIX)
     target_link_libraries(CsoundVST3 PRIVATE csound64)
 endif()
 
-# Optional: Install plugin targets if needed
-# install(TARGETS CsoundVST3 DESTINATION ...)
+# Code signing for Xcode builds
+if(APPLE AND CMAKE_GENERATOR STREQUAL "Xcode")
+    set_xcode_property(CsoundVST3 CODE_SIGN_IDENTITY "@michael_gogins" "ALL")
+endif()
 
+if(CSOUND_INCLUDE_DIR)
+    target_include_directories(CsoundVST3 PRIVATE ${CSOUND_INCLUDE_DIR})
+else()
+    message(WARNING "Csound headers not found; assuming they are not needed directly.")
+endif()
+
+# Install target (optional)
+install(TARGETS CsoundVST3
+    BUNDLE DESTINATION bin
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
