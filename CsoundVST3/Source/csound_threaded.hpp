@@ -44,7 +44,7 @@
 %}
 #else
 #ifdef __APPLE__
-#import <CsoundLib64/csound.hpp>
+#include <csound.hpp>
 #else
 #include <csound.hpp>
 #endif

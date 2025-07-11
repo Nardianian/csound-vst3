@@ -1,5 +1,8 @@
 #pragma once
 
+#include "BinaryData.h"
+#include <juce_core/juce_core.h> // or wherever you're using JUCE types
+
 #include <JuceHeader.h>
 #include "csoundvst3_version.h"
 #include <fstream>
