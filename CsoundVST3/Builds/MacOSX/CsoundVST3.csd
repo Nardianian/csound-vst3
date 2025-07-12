@@ -11,7 +11,7 @@ csoundoutput bounds(10, 100, 580, 180) channel("csoundoutput10001")
   <CsInstruments>
   sr = 48000
   ksmps = 128
-  nchnls = 2
+  nchnls = 2 i 4 1 120 72 80
   0dbfs = 3
   
   ; Ensure the same random stream for each rendering.
