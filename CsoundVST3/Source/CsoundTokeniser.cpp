@@ -1,8 +1,10 @@
-#include <JuceHeader.h>
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_utils/juce_audio_utils.h>
+#include <juce_gui_extra/juce_gui_extra.h>
 #include "CsoundTokeniser.h"
 #include "csd_ids.h"
 
-juce::StringArray csoundKeywords;
+/// juce::StringArray csoundKeywords;
 std::set<std::string> csound_keywords;
 /// const juce::StringArray csoundOpcodes = { "oscil", "adsr", "reverb" };
 

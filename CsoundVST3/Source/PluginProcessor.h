@@ -1,12 +1,21 @@
 #pragma once
 
-#include <JuceHeader.h>
+#include "BinaryData.h"
+#include <juce_core/juce_core.h> // or wherever you're using JUCE types
+
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_utils/juce_audio_utils.h>
+#include <juce_gui_extra/juce_gui_extra.h>
 #include "csound_threaded.hpp"
 #include "readerwriterqueue.h"
 #include "csoundvst3_version.h"
 
 #include <iostream>
 #include <numeric>
+
+#ifndef SIGTRAP
+#define SIGTRAP 5
+#endif
 
 class MidiChannelMessage
 {

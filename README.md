@@ -63,12 +63,12 @@ computer's Applications folder.
     can map MIDI channel message fields to your Csound instrument pfields, 
     and should open MIDI inputs and, if needed, MIDI outputs, for example:
     
-    -MN -QN --midi-key=4 --midi-velocity=5 -m163 --daemon  
+    -M0 -Q0 --midi-key=4 --midi-velocity=5 -m163 --daemon  
     
-    Note that "-MN" must used for MIDI input from the DAW, and that "-QN" must 
-    be used for MIDI output to the DAW. For standalone use, the actual device 
-    number must be used in place of "N". CsoundVST3 prints a list of available 
-    MIDI devices when it compiles the .csd.
+    Note that "-M" with a devoce number must used for MIDI input from the DAW, 
+    and that "-Q" with a device number must be used for MIDI output to the 
+    DAW. CsoundVST3 prints a list of available MIDI devices when it compiles 
+    the .csd.
     
     The "--daemon" option ensures that the Csound orchestra will run 
     indefinitely within the DAW project.
@@ -116,6 +116,10 @@ control variables in your csd, and then you can save the state of your MIDI
 controllers in your DAW project.
 
 ## Release Notes 
+
+### Version 1.1.0-beta
+
+Changed the build system from the Projucer to CMake, improved the README.
 
 ### Version 1.0.3-beta
 

@@ -8,11 +8,13 @@
 
 #pragma once
 
-#include <JuceHeader.h>
+#include "BinaryData.h"
+#include <juce_audio_processors/juce_audio_processors.h>
+#include <juce_audio_utils/juce_audio_utils.h>
+#include <juce_gui_extra/juce_gui_extra.h>
 #include "PluginProcessor.h"
 #include "CsoundTokeniser.h"
 #include "csoundvst3_version.h"
-
 
 class SearchAndReplaceDialog : public juce::Component,
                                private juce::Button::Listener
