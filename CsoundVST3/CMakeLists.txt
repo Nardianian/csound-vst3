@@ -9,8 +9,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
 # Set JUCE root (update path if necessary)
-set(JUCE_ROOT "${CMAKE_SOURCE_DIR}/include/JUCE")
-add_subdirectory(${JUCE_ROOT})
+# set(JUCE_ROOT "${CMAKE_SOURCE_DIR}/include/JUCE")
+# add_subdirectory(${JUCE_ROOT})
 
 # Fnd Csound for non-macOS platforms.
 
@@ -33,8 +33,8 @@ if (NOT APPLE)
         )
     endif()
     find_path(CSOUND_INCLUDE_DIR
-        NAMES csound/csound.hpp
-        PATH_SUFFIXES include
+        NAMES csound.hpp
+        PATH_SUFFIXES include/csound
         PATHS ${CSOUND_POSSIBLE_PATHS}
         NO_DEFAULT_PATH
     )
