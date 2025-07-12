@@ -214,7 +214,7 @@ if(APPLE)
         message(STATUS \"Signing Standalone app...\")
         execute_process(COMMAND codesign --deep --force --options runtime
             --sign \"${CSOUND_SIGN_IDENTITY}\"
-            \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/Applications/CsoundVST3_Standalone.app\")
+            \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/Applications/CsoundVST3.app\")
     ")
 elseif(WIN32 OR UNIX)
     install(TARGETS CsoundVST3
