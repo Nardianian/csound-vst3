@@ -28,8 +28,7 @@
     file might be covered by the GNU Lesser General Public License.
 */
 
-#ifndef __CSOUND_THREADED_HPP__
-#define __CSOUND_THREADED_HPP__
+#pragma once
 
 #if defined(__GNUC__)
 #if __cplusplus <= 199711L
@@ -40,17 +39,10 @@
 #ifdef SWIG
 %module csnd6
 %{
-#import <CsoundLib64/csound.hpp>
+#include "csound.hpp"
 %}
-#else
-#ifdef __APPLE__
-#include <csound.hpp>
-#else
-#include <csound.hpp>
 #endif
-#ifdef __BUILDING_CSOUND_INTERFACES
-#endif
-
+#include "csound.hpp"
 #include <atomic>
 #include <condition_variable>
 #include <memory>
@@ -338,6 +330,3 @@ public:
     }
 };
 
-#endif  // __cplusplus
-
-#endif  // __CSOUND_HPP__

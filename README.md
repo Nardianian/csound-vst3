@@ -117,6 +117,10 @@ controllers in your DAW project.
 
 ## Release Notes 
 
+### Version 1.1.0-beta
+
+Changed the build system from the Projucer to CMake.
+
 ### Version 1.0.3-beta
 
 A basic search and replace function has been added.

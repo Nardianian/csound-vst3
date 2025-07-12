@@ -68,8 +68,8 @@ juce_add_plugin(CsoundVST3
     FORMATS AU VST3 Standalone
 
     VST3_CATEGORIES "Fx;Instrument"
-    AAX_CATEGORY "16"
-    AUMAIN_TYPE "aumu"
+    BUNDLE_ID "com.irreducibleproductions.csoundvst3"
+
 
     PLUGIN_MANUFACTURER_CODE IrPr
     PLUGIN_CODE Csv3
@@ -135,6 +135,30 @@ if(APPLE)
         CsoundVST3_AU
     )
 
+
+    set(BASE_BUNDLE_ID "com.irreducibleproductions.csoundvst3")
+
+    set(BUNDLE_IDENTIFIER "${BASE_BUNDLE_ID}.vst3")
+    configure_file(${CMAKE_SOURCE_DIR}/Resources/Info.plist.in ${CMAKE_BINARY_DIR}/VST3_Info.plist @ONLY)
+
+    set(BUNDLE_IDENTIFIER "${BASE_BUNDLE_ID}.au")
+    configure_file(${CMAKE_SOURCE_DIR}/Resources/Info.plist.in ${CMAKE_BINARY_DIR}/AU_Info.plist @ONLY)
+
+    set(BUNDLE_IDENTIFIER "${BASE_BUNDLE_ID}.standalone")
+    configure_file(${CMAKE_SOURCE_DIR}/Resources/Info.plist.in ${CMAKE_BINARY_DIR}/Standalone_Info.plist @ONLY)
+
+    set_target_properties(CsoundVST3_VST3 PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/VST3_Info.plist
+    )
+
+    set_target_properties(CsoundVST3_AU PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/AU_Info.plist
+    )
+
+    set_target_properties(CsoundVST3_Standalone PROPERTIES
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/Standalone_Info.plist
+    )
+
     foreach(target IN LISTS CSOUNDVST3_TARGETS)
         if(TARGET ${target})
             target_include_directories(${target} PRIVATE /Library/Frameworks/CsoundLib64.framework/Headers)
@@ -143,24 +167,20 @@ if(APPLE)
         endif()
     endforeach()
 
+        set(ICNS_FILE Resources/angel_concert.icns)
+    set_source_files_properties(${ICNS_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
-    set(resources
-        Resources/angel_concert.png
-        Resources/angel_concert.icns
-    )
-
-    foreach(target IN ITEMS CsoundVST3 CsoundVST3_VST3 CsoundVST3_AU CsoundVST3_Standalone)
+    foreach(target IN LISTS CSOUNDVST3_TARGETS)
         if(TARGET ${target})
-            set_source_files_properties(Resources/angel_concert.icns PROPERTIES
-                MACOSX_PACKAGE_LOCATION "Resources"
-            )
+            target_sources(${target} PRIVATE ${ICNS_FILE})
             set_target_properties(${target} PROPERTIES
                 MACOSX_BUNDLE TRUE
                 MACOSX_BUNDLE_ICON_FILE angel_concert.icns
-                RESOURCE "${resources}"
             )
         endif()
     endforeach()
+
+    
 
     # Code signing
     if(CMAKE_GENERATOR STREQUAL "Xcode")
@@ -176,21 +196,11 @@ elseif(UNIX)
     target_link_libraries(CsoundVST3 PRIVATE ${CSOUND_LIBRARY})
 endif()
 
-# Code signing for Xcode builds
-if(APPLE AND CMAKE_GENERATOR STREQUAL "Xcode")
-    set_xcode_property(CsoundVST3 CODE_SIGN_IDENTITY "@michael_gogins" "ALL")
-endif()
-
-if(CSOUND_INCLUDE_DIR)
-    target_include_directories(CsoundVST3 PRIVATE ${CSOUND_INCLUDE_DIR})
-else()
-    message(WARNING "Csound headers not found; assuming they are not needed directly.")
-endif()
-
 # Install target (optional)
 install(TARGETS CsoundVST3
     BUNDLE DESTINATION bin
     RUNTIME DESTINATION bin
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib
+    RESOURCE DESTINATION share/CsoundVST3/resources
 )
