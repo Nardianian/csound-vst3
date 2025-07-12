@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(CsoundVST3 VERSION 1.0.0)
+project(CsoundVST3 VERSION 1.1.0)
+set(CSOUND_SIGN_IDENTITY "Apple Development: Michael Gogins (JC94KD4B5T)" CACHE STRING "Code signing identity for macOS")
 
 # Require C++20
 set(CMAKE_CXX_STANDARD 20)
@@ -11,12 +12,11 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 set(JUCE_ROOT "${CMAKE_SOURCE_DIR}/include/JUCE")
 add_subdirectory(${JUCE_ROOT})
 
-# First, find Csound for non-macOS platforms.
+# Fnd Csound for non-macOS platforms.
 
 if (NOT APPLE)
     # Allow the user to specify a custom root path for Csound
     set(CSOUND_ROOT "" CACHE PATH "Root directory of the Csound installation")
-
     # Platform-specific hints
     if(WIN32)
         set(CSOUND_POSSIBLE_PATHS
@@ -32,24 +32,19 @@ if (NOT APPLE)
             "/opt"
         )
     endif()
-
-    # Find include directory
     find_path(CSOUND_INCLUDE_DIR
         NAMES csound/csound.hpp
         PATH_SUFFIXES include
         PATHS ${CSOUND_POSSIBLE_PATHS}
         NO_DEFAULT_PATH
     )
-
-    # Find library
     find_library(CSOUND_LIBRARY
         NAMES csound64 CsoundLib64 csound
         PATH_SUFFIXES lib
         PATHS ${CSOUND_POSSIBLE_PATHS}
         NO_DEFAULT_PATH
     )
-
-    # Error out if not found
+    # Error out if not found.
     if(NOT CSOUND_INCLUDE_DIR OR NOT CSOUND_LIBRARY)
         message(FATAL_ERROR "Csound library or headers not found. Set CSOUND_ROOT or install Csound.")
     endif()
@@ -70,7 +65,6 @@ juce_add_plugin(CsoundVST3
     VST3_CATEGORIES "Fx;Instrument"
     BUNDLE_ID "com.irreducibleproductions.csoundvst3"
 
-
     PLUGIN_MANUFACTURER_CODE IrPr
     PLUGIN_CODE Csv3
     PRODUCT_NAME "CsoundVST3"
@@ -81,7 +75,6 @@ juce_add_binary_data(CsoundBinaryData
     SOURCES
         Resources/angel_concert.png
         Resources/angel_concert.icns
-        # Resources/README.md
 )
 
 # Add source files
@@ -135,26 +128,21 @@ if(APPLE)
         CsoundVST3_AU
     )
 
-
     set(BASE_BUNDLE_ID "com.irreducibleproductions.csoundvst3")
 
     set(BUNDLE_IDENTIFIER "${BASE_BUNDLE_ID}.vst3")
     configure_file(${CMAKE_SOURCE_DIR}/Resources/Info.plist.in ${CMAKE_BINARY_DIR}/VST3_Info.plist @ONLY)
-
     set(BUNDLE_IDENTIFIER "${BASE_BUNDLE_ID}.au")
     configure_file(${CMAKE_SOURCE_DIR}/Resources/Info.plist.in ${CMAKE_BINARY_DIR}/AU_Info.plist @ONLY)
-
     set(BUNDLE_IDENTIFIER "${BASE_BUNDLE_ID}.standalone")
     configure_file(${CMAKE_SOURCE_DIR}/Resources/Info.plist.in ${CMAKE_BINARY_DIR}/Standalone_Info.plist @ONLY)
 
     set_target_properties(CsoundVST3_VST3 PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/VST3_Info.plist
     )
-
     set_target_properties(CsoundVST3_AU PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/AU_Info.plist
     )
-
     set_target_properties(CsoundVST3_Standalone PROPERTIES
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_BINARY_DIR}/Standalone_Info.plist
     )
@@ -167,7 +155,7 @@ if(APPLE)
         endif()
     endforeach()
 
-        set(ICNS_FILE Resources/angel_concert.icns)
+    set(ICNS_FILE Resources/angel_concert.icns)
     set_source_files_properties(${ICNS_FILE} PROPERTIES MACOSX_PACKAGE_LOCATION "Resources")
 
     foreach(target IN LISTS CSOUNDVST3_TARGETS)
@@ -179,28 +167,60 @@ if(APPLE)
             )
         endif()
     endforeach()
-
-    
-
-    # Code signing
-    if(CMAKE_GENERATOR STREQUAL "Xcode")
-        set_xcode_property(CsoundVST3 CODE_SIGN_IDENTITY "@michael_gogins" "ALL")
-    endif()
 elseif(WIN32)
-    include_directories("C:/path/to/csound/include")
-    link_directories("C:/path/to/csound/lib")
-    target_link_libraries(CsoundVST3 PRIVATE ${CSOUND_LIBRARY})
+    set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+    if(CSOUND_INCLUDE_DIR)
+        target_include_directories(CsoundVST3 PRIVATE ${CSOUND_INCLUDE_DIR})
+    endif()
+    if(CSOUND_LIBRARY)
+        target_link_libraries(CsoundVST3 PRIVATE ${CSOUND_LIBRARY})
+    endif()
 elseif(UNIX)
     include_directories("/usr/include/csound" "/opt/homebrew/include/csound")
     link_directories("/usr/lib" "/opt/homebrew/lib")
     target_link_libraries(CsoundVST3 PRIVATE ${CSOUND_LIBRARY})
 endif()
 
-# Install target (optional)
-install(TARGETS CsoundVST3
-    BUNDLE DESTINATION bin
-    RUNTIME DESTINATION bin
-    LIBRARY DESTINATION lib
-    ARCHIVE DESTINATION lib
-    RESOURCE DESTINATION share/CsoundVST3/resources
-)
+
+
+if(APPLE)
+    # Install VST3 plugin (CMake treats it as a MODULE, so we must use LIBRARY DESTINATION)
+    install(TARGETS CsoundVST3_VST3
+        LIBRARY DESTINATION Library/Audio/Plug-Ins/VST3
+    )
+
+    # Install AU plugin (also a MODULE, needs LIBRARY DESTINATION)
+    install(TARGETS CsoundVST3_AU
+        LIBRARY DESTINATION Library/Audio/Plug-Ins/Components
+    )
+
+    # Install standalone .app
+    install(TARGETS CsoundVST3_Standalone
+        BUNDLE DESTINATION Applications
+    )
+
+    # Sign all bundles after installation
+    install(CODE "
+        message(STATUS \"Signing VST3 bundle...\")
+        execute_process(COMMAND codesign --deep --force --options runtime
+            --sign \"${CSOUND_SIGN_IDENTITY}\"
+            \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/Library/Audio/Plug-Ins/VST3/CsoundVST3.vst3\")
+
+        message(STATUS \"Signing AU component...\")
+        execute_process(COMMAND codesign --deep --force --options runtime
+            --sign \"${CSOUND_SIGN_IDENTITY}\"
+            \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/Library/Audio/Plug-Ins/Components/CsoundVST3.component\")
+
+        message(STATUS \"Signing Standalone app...\")
+        execute_process(COMMAND codesign --deep --force --options runtime
+            --sign \"${CSOUND_SIGN_IDENTITY}\"
+            \"\$ENV{DESTDIR}\${CMAKE_INSTALL_PREFIX}/Applications/CsoundVST3_Standalone.app\")
+    ")
+elseif(WIN32 OR UNIX)
+    install(TARGETS CsoundVST3
+        RUNTIME DESTINATION bin
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+    )
+endif()
+
