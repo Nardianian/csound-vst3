@@ -1,7 +1,6 @@
 # About this fork
-This fork simply modified the "CMakeLists.txt" file to add support for Jack2, ASIO, and WinRT-MIDI, as well as VST2, LV2, AAX, and VST3 formats on Windows, while leaving the rest intact (for Mac). But keep in mind that i believe the VST2 version requires a Steinberg license, while for the AAX version, after compiling the plugin, you need to follow a specific validation procedure using tools like Pro Tools Developer, AAX Validator, PACE Eden Signing Tools, etc., and, of course, your Avid\Pro Tools and iLok accounts.
-Build using Juce 8.0.10, Cmake 4.1.1 and Visualò Studio Community Edition 2022 v17 (latest build).
-Before compiling, check the correspondence of the directories in the cmakelistst.txt file.
+This fork Replaced two lines of code on "PluginProcessor.cpp" (from Gogins original repo) to address warnings that the plugin might behave in unusual ways under certain conditions. Also i simply modified the "CMakeLists.txt" file to add support for Jack2, ASIO, and WinRT-MIDI, as well as VST2, LV2, AAX, and VST3 formats on Windows, while leaving the rest intact (for Mac). But keep in mind that i believe the VST2 version requires a Steinberg license, while for the AAX version, after compiling the plugin, you need to follow a specific validation procedure using tools like Pro Tools Developer, AAX Validator, PACE Eden Signing Tools, etc., and, of course, your Avid\Pro Tools and iLok accounts.
+Build using Juce 8.0.10, Cmake 4.1.1 and Visual Studio Community Edition 2022 v17 (latest build). In Include folder the repo is linked to Juce 8.0.8 commits but you can use also version 8.0.10, download it and replace to older Juce release. Before compiling, check the correspondence of the directories in the "Cmakelistst.txt" file.
 
 # Original ReadMe:
 
